@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TP 2.0</title>
+  <!-- Viewport mobile tag for sensible mobile support -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style type="text/css">
+  </style>
+  <!--STYLES-->
+  <link rel="stylesheet" href="/min/production.min.css">
+  <!--STYLES END-->
+  <style type="text/css">
+  </style>
+</head>
+
+<body>
+  <div id='loader'>
+  	<div class="spinner"></div>
+  </div>
+  <script>
+  	window.addEventListener('load', () => {
+  		const loader = document.getElementById('loader');
+  		setTimeout(() => {
+  			loader.classList.add('fadeOut');
+  		}, 300);
+  	});
+  </script>
+  <div class="manager-nav-container">
+    <a href="./" id="back-console-link" class="logo-home-label">
+      <img id="login-brand-img" src="./images/blue-logo.png" alt="">
+      <span id="logo-text">TouchPad Experiment</span>
+    </a>
+    <div id="manager-info-container" class="dropdown manager-info-container">
+      <button class="btn icon-user btn-icon dropdown-toggle" type="button" id="manager-name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%-data.manager.Name%></button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+        <a class="icon-settings btn-icon dropdown-item" href="/myAccount">My Account</a>
+        <a class="icon-user-following btn-icon dropdown-item" href="/adminHome">Admin Console</a>
+        <a class="icon-logout btn-icon dropdown-item" href="/managerLogout">Log out</a>
+      </div>
+    </div>
+  </div>
+
+  <%- body %>
+    <!-- <div id="footer">
+            This is footer
+        </div> -->
+    <!--SCRIPTS-->
+    <script src="/min/production.min.js"></script>
+    <!--SCRIPTS END-->
+    <script src="https://use.fontawesome.com/dbb9cb4177.js"></script>
+    <script type="text/javascript">
+      var manager = <%-JSON.stringify(data.manager)%>;
+      $(document).ready(function() {
+        console.log(manager);
+        //$.fpLoading();
+        ini();
+        $(".manager-info-container").click(function() {
+          if ($(".manager-account-drop-down").hasClass("active")) {
+            $(".manager-account-drop-down").hide();
+            $(".manager-account-drop-down").removeClass("active");
+          } else {
+            $(".manager-account-drop-down").show();
+            $(".manager-account-drop-down").addClass("active");
+          }
+
+        });
+        $(".page-container").click(function() {
+          if ($(".manager-account-drop-down").hasClass("active")) {
+            $(".manager-account-drop-down").hide();
+            $(".manager-account-drop-down").removeClass("active");
+          }
+        });
+      });
+    </script>
+</body>
+
+</html>

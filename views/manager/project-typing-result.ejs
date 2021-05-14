@@ -1,0 +1,268 @@
+<style type="text/css">
+#no-data-alert {
+    text-align: -webkit-center;
+    color: #FFF;
+    font-size: 20px;
+    background: firebrick;
+    border: 0px;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: none;
+}
+
+#subjects-table-container {
+
+}
+
+.table {
+    font-size: 12px;
+}
+
+.table td {
+    width: 10%;
+}
+
+.table>thead {
+    border-color: #FFF;
+    color: #FFF;
+}
+
+.table>tbody * {
+    border-color: #FFF;
+    background: #EEE;
+}
+
+.table-title {
+    display: table;
+    padding: 10px 5px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #333;
+}
+
+.back-links-container {
+    display: block;
+    margin-bottom: 15px;
+}
+
+.back-link {
+    border: 1px solid #337ab7;
+    border-radius: 3px;
+    padding: 5px;
+}
+
+.project-info-container {
+    background: #FFF;
+    display: block;
+    margin: 10px 0px;
+    width: 99%;
+    padding: 15px 15px;
+    border: 0px;
+    border-radius: 3px;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    color: #999;
+}
+
+#project-name {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+}
+
+#owner {
+    font-weight: bold;
+    color: #333;
+}
+
+</style>
+<script type="text/javascript">
+var ajaxErrorCounts = 0,
+    ajaxErrorModelCounts = 0;
+var ajaxErrorTotal = 0,
+    ajaxErrorModelTotal = 0;
+function replaceModelName(id) {
+    var name = id;
+    for (var i = 0; i < project.Devices.length; i++) {
+        if (project.Devices[i].id == id) {
+            name = project.Devices[i].ModelName + " - "+project.Devices[i].DeviceName;
+            break;
+        }
+    }
+    return name;
+}
+function replaceSubjectName(id) {
+    var name = id;
+    for (var i = 0; i < project.Subject.length; i++) {
+        if (project.Subject[i].id == id) {
+            name = project.Subject[i].Name;
+            break;
+        }
+    }
+    return name;
+}
+function showAjaxProcess() {
+    //console.log(ajaxErrorModelCounts, ajaxErrorModelTotal);
+    var p1 = ((ajaxErrorModelCounts / ajaxErrorModelTotal) * 100).toFixed(0);
+    var p2 = ((ajaxErrorCounts / ajaxErrorTotal) * 100).toFixed(0);
+    $("#byModelProcess").html(p1 + "% Loaded");
+    $("#byPartiProcess").html(p2 + "% Loaded");
+    if (p1 == "100") {
+        $("#byModelProcess").fadeOut(3000);
+    }
+    if (p2 == "100") {
+        $("#byPartiProcess").fadeOut(3000);
+    }
+    //$("#byModelProcess").html(ajaxErrorModelCounts+" / "+ajaxErrorModelTotal);
+    //$("#byPartiProcess").html(ajaxErrorCounts+" / "+ajaxErrorTotal);
+}
+
+function fillSpecialErrors(sName, sModel) {
+    $.get("./typeSpecialError", {
+        project: project.id,
+        device: sModel,
+        subject: sName
+    }).done(function(specialCounts) {
+        ajaxErrorCounts = ajaxErrorCounts + 1;
+        showAjaxProcess();
+        var total = 0;
+        for (var j = 0; j < specialCounts.length; j++) {
+            if (specialCounts[j].EventType == "clickToolbar") { //clickToolbar, failDropOverlapping, dbClickFile
+                $("#subjects-table #" + sName + sModel + "clickToolbar").html(specialCounts[j].Counter);
+                total = total + specialCounts[j].Counter;
+            }
+            if (specialCounts[j].EventType == "click") {
+                $("#subjects-table #" + sName + sModel + "click").html(specialCounts[j].Counter);
+                total = total + specialCounts[j].Counter;
+            }
+            if (specialCounts[j].EventType == "mousemove") {
+                $("#subjects-table #" + sName + sModel + "mousemove").html(specialCounts[j].EventDuration);
+                //total = total + specialCounts[j].counter;
+            }
+            if (specialCounts[j].EventType == "mousewheel") {
+                var yesOrNo = (specialCounts[j].Counter > 0) ? ("Yes") : ("No");
+                $("#subjects-table #" + sName + sModel + "mousewheel").html(yesOrNo);
+            }
+        };
+        $("#subjects-table #" + sName + sModel + "total").html(total);
+    });
+}
+
+function fillModelSpecialErrors(sModel) {
+    $.get("./typeSpecialError", {
+        project: project.id,
+        device: sModel,
+        modelOnly: true
+    }).done(function(specialCounts) {
+        ajaxErrorModelCounts = ajaxErrorModelCounts + 1;
+        showAjaxProcess();
+        var total = 0;
+        for (var j = 0; j < specialCounts.length; j++) {
+
+            if (specialCounts[j].EventType == "clickToolbar") { //clickToolbar, failDropOverlapping, dbClickFile
+                $("#models-table #" + sModel + "clickToolbar").html(specialCounts[j].Counter);
+                total = total + specialCounts[j].Counter;
+            }
+            if (specialCounts[j].EventType == "click") {
+                $("#models-table #" + sModel + "click").html(specialCounts[j].Counter);
+                total = total + specialCounts[j].Counter;
+            }
+            if (specialCounts[j].EventType == "mousemove") {
+                $("#models-table #" + sModel + "mousemove").html(specialCounts[j].EventDuration);
+                //total = total + specialCounts[j].counter;
+            }
+            if (specialCounts[j].EventType == "mousewheel") {
+                var yesOrNo = (specialCounts[j].Counter > 0) ? ("Yes") : ("No");
+                $("#models-table #" + sModel + "mousewheel").html(yesOrNo);
+            }
+
+        };
+        $("#models-table #" + sModel + "total").html(total);
+    });
+}
+
+function getData() {
+    $.get("./typeError", {
+        project: project.id
+    }).done(function(errorData) {
+        ajaxErrorTotal = errorData.length;
+        for (var i = 0; i < errorData.length; i++) {
+            var sName = errorData[i].Subject;
+            var sModel = errorData[i].ProjectDevice;
+            var tr = $("<tr />").appendTo("#subjects-table>tbody");
+            $("<td>" + replaceSubjectName(sName) + "</td>" +
+                "<td>" + replaceModelName(sModel) + "</td>" +
+                "<td id='" + sName + sModel + "total'>0</td>" + //end test event -1
+                "<td id='" + sName + sModel + "clickToolbar'>" + "0</td>" +
+                "<td id='" + sName + sModel + "click'>" + "0</td>" +
+                "<td id='" + sName + sModel + "mousemove'>" + "0</td>" +
+                "<td id='" + sName + sModel + "mousewheel'>" + "No</td>"
+            ).appendTo(tr);
+            fillSpecialErrors(sName, sModel);
+        };
+    });
+    //models data
+    $.get("./typeError", {
+        project: project.id,
+        modelOnly: true
+    }).done(function(errorData) {
+        ajaxErrorModelTotal = errorData.length;
+        for (var i = 0; i < errorData.length; i++) {
+            var sModel = errorData[i].ProjectDevice;
+            var tr = $("<tr />").appendTo("#models-table>tbody");
+            $("<td>" + replaceModelName(sModel) + "</td>" +
+                "<td id='" + sModel + "total'>0</td>" + //end test event -1
+                "<td id='" + sModel + "clickToolbar'>" + "0</td>" +
+                "<td id='" + sModel + "click'>" + "0</td>" +
+                "<td id='" + sModel + "mousemove'>" + "0</td>" +
+                "<td id='" + sModel + "mousewheel'>" + "No</td>"
+            ).appendTo(tr);
+            fillModelSpecialErrors(sModel);
+        };
+    });
+}
+
+function ini() {
+    $(".project-nav-link[data-nav='typing-result']").addClass("active");
+    getData();
+}
+
+</script>
+<div class="project-container">
+    <div id="no-data-alert">There is no data in this project!!!</div>
+    <div id="subjects-table-container">
+        <span class="table-title">Error rates by Models <span id="byModelProcess"></span></span>
+        <table class="table table-bordered" id="models-table">
+            <thead>
+                <tr>
+                    <td>Model</td>
+                    <td style="background:yellowgreen;">Total Errors</td>
+                    <td>Number of click on the toolbar area</td>
+                    <td>Number of click</td>
+                    <td>Duration of mouse move(ms)</td>
+                    <td>Scrolling activated</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <span class="table-title">Error rates by Participants <span id="byPartiProcess"></span></span>
+        <table class="table table-bordered" id="subjects-table">
+            <thead>
+                <tr>
+                    <td>Participants</td>
+                    <td>Model</td>
+                    <td style="background:yellowgreen;">Total Errors</td>
+                    <td>Number of click on the toolbar area</td>
+                    <td>Number of click</td>
+                    <td>Duration of mouse move(ms)</td>
+                    <td>Scrolling activated</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

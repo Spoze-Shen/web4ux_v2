@@ -1,0 +1,220 @@
+<style type="text/css">
+  .project-container {
+    padding: 10px 10px;
+  }
+
+  #no-data-alert {
+    text-align: -webkit-center;
+    color: #FFF;
+    font-size: 20px;
+    background: firebrick;
+    border: 0px;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: none;
+  }
+
+  #subjects-table-container {}
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table>thead {}
+
+  .table>tbody * {
+    border-color: #FFF;
+    background: #EEE;
+  }
+
+  .table td {
+    padding: 0px !important;
+  }
+
+  .table thead td {
+    color: #FFF;
+    padding: 5px 5px !important;
+    white-space: nowrap;
+  }
+
+  .table tbody td {
+    padding: 5px !important;
+  }
+
+  .table-title {
+    padding: 10px 5px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #333;
+  }
+</style>
+<script type="text/javascript">
+  function createTable(data) {
+
+    //$.each(data, function(index, log) {
+    //   var startTime = parseInt(log.StartTime),
+    //     endTime = parseInt(log.EndTime);
+    //   var isError = (log.Success) ? (false) : (true);
+    //   $("<tr>" +
+    //     "<td>" + log.Subject.Name + "</td>" +
+    //     "<td>" + log.ProjectDevice.ModelName + " " + log.ProjectDevice.DeviceName + "</td>" +
+    //     "<td>" + log.Side + "</td>" +
+    //     "<td>" + log.Round + "</td>" +
+    //     "<td>" + log.FileIndex + "</td>" +
+    //     "<td>" + isError + "</td>" +
+    //     "<td>" + moment(startTime).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S") + "</td>" +
+    //     "<td>" + moment(endTime).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S") + "</td>" +
+    //     "( " + value.x + ", " + value.y + " )" +
+    //     "<td>( " + log.DropPoint.x + ", " + log.DropPoint.y + " )</td>" +
+    //     "<td>" + log.ClickNoneFile + "</td>" +
+    //     "<td>( " + log.FailClick.x + ", " + log.FailClick.y + " )</td>" +
+    //     "</tr>").appendTo("#log-table>tbody");
+    // });
+    $('#log-table').bootstrapTable('destroy');
+    $('#log-table').bootstrapTable({
+      icons: {
+        columns: 'icon-menu',
+      },
+      columns: [{
+          field: 'Subject.Name',
+          title: 'Participants',
+          sortable: true,
+        },
+        {
+          field: 'ProjectDevice.ModelName',
+          title: 'Model',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return value + " " + row.ProjectDevice.DeviceName;
+          }
+        }, {
+          field: 'Side',
+          title: 'Drag Side',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return value + " " + row.ProjectDevice.DeviceName;
+          }
+        }, {
+          field: 'Round',
+          title: 'Trail',
+          sortable: true
+        }, {
+          field: 'FileIndex',
+          title: 'File Index',
+          sortable: true
+        }, {
+          field: 'Success',
+          title: 'Error',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return (value) ? (false) : (true);
+          }
+        }, {
+          field: 'StartTime',
+          title: 'Event Start Time',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return moment(parseInt(value)).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S");
+          }
+
+        }, {
+          field: 'EndTime',
+          title: 'Event End Time',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return moment(parseInt(value)).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S");
+          }
+        }, {
+          field: 'DragPoint',
+          title: 'Drag Position',
+          formatter: function(value, row, index, field) {
+            return "( " + value.x + ", " + value.y + " )";
+          }
+        }, {
+          field: 'DropPoint',
+          title: 'Drop Position',
+          sortable: true,
+          formatter: function(value, row, index, field) {
+            return "( " + value.x + ", " + value.y + " )";
+          }
+        }, {
+          field: 'ClickNoneFile',
+          title: 'Fail Click'
+        }, {
+          field: 'FailClick',
+          title: 'Fail Click Position',
+          formatter: function(value, row, index, field) {
+            return "( " + value.x + ", " + value.y + " )";
+          }
+        }
+      ],
+      data: data
+    });
+  }
+
+  function getData() {
+    $.ajax({
+      xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        //Upload progress
+        xhr.upload.addEventListener("progress", function(evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = (evt.loaded / evt.total) * 100;
+            $("#loading-percentage").html("Preparing data...");
+          }
+        }, false);
+        //Download progress WE ONLY HAVE DOWNLOAD
+        xhr.addEventListener("progress", function(evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = (evt.loaded / evt.total) * 100;
+            //console.log(percentComplete);
+            $("#loading-percentage").attr("style", "width: " + percentComplete.toFixed(0) + "%");
+            $("#loading-percentage").attr("aria-valuenow", percentComplete.toFixed(0));
+          }
+        }, false);
+        return xhr;
+      },
+      type: 'GET',
+      url: "./dragAndDropLogData",
+      data: {
+        project: project.id
+      },
+      success: function(data) {
+        $("#loading-percentage").html("100% Loaded");
+        if (data.error) {
+          alert("System error : " + data.error);
+        } else if (data.length == 0) {
+          $("#no-data-alert").show();
+        } else {
+          createTable(data);
+
+        }
+      }
+    });
+  }
+
+  function ini() {
+    $(".project-nav-link[data-nav='drag-raw']").addClass("active");
+    getData();
+    $("#copyLogTable").click(function(e) {
+      e.preventDefault();
+      selectElementContents($(this).attr("data-source"));
+      alert("Data copied!");
+    });
+  }
+</script>
+<div class="project-container">
+  <div id="no-data-alert">There is no data in this project!!!</div>
+  <div id="subjects-table-container">
+    <div class="tab-btn-container">
+      <div></div>
+      <button data-source="log-table" id="copyLogTable" class="icon-docs btn btn-icon btn-outline-primary">Copy Log Data</button>
+    </div>
+    <div class="progress">
+      <div id="loading-percentage" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+
+    <table class="table" id="log-table"></table>
+  </div>
+</div>

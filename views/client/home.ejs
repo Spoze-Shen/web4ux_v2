@@ -1,0 +1,120 @@
+<style type="text/css">
+	.page-container {
+		background-color: #f2eee2;
+		min-height: 100vh;
+		padding-top: 20px;
+	}
+
+	.guide-container {
+		text-align: center;
+		display: block;
+		padding: 20px 0px;
+		background: #FFF;
+		border: 1px solid rgba(0, 0, 0, .0625);
+		width: 90%;
+		margin: 0px auto;
+	}
+
+	.guide-container img {
+		width: 80px;
+	}
+
+	.guide-container .guide-content-container {
+		width: 80%;
+		display: block;
+		margin: 30px auto;
+		text-align: left;
+	}
+
+	.guide-container .guide-content-container h1 {
+		text-align: center;
+		padding-bottom: 30px;
+	}
+
+	.experiment-link-container {
+		display: block;
+		width: 38%;
+		text-align: -webkit-center;
+		margin: 50px auto;
+
+	}
+
+	.experiment-link-container a {
+		display: inline-block;
+		text-align: center;
+		line-height: 50px;
+		font-size: 20px;
+		background: #CCC;
+		color: #FFF;
+		text-decoration: none;
+		padding: 5px 30px;
+		letter-spacing: 1px;
+		border-radius: 5px;
+		display: block;
+		margin: 10px 15px;
+		cursor: not-allowed;
+	}
+
+	.experiment-link-container a.finished {
+		border: 1px solid #337ab7;
+		background: none;
+		color: #337ab7;
+	}
+
+	.experiment-link-container a.finished .fa {
+		color: #337ab7;
+		margin-left: 20px;
+	}
+
+	.experiment-link-container a.active {
+		background: #337ab7;
+		color: #FFF;
+		cursor: pointer;
+	}
+</style>
+<script type="text/javascript">
+	function ini() {
+		console.log(subject);
+		$.fpLoaded();
+		for (var i = 0; i < project.TestName.length; i++) {
+			if (project.TestName[i] == experiment.thisTestName) {
+				$("<a />", {
+					class: "active",
+					href: experiment.thisTestUrl+'?subjectId='+subject,
+					text: experiment.thisTestName
+				}).appendTo(".experiment-link-container");
+			} else {
+				if (i < experiment.thisTestIndex) {
+					$("<a />", {
+						href: "#",
+						text: project.TestName[i],
+						class: "finished"
+					}).append('<i class="fa fa-check"></i>').appendTo(".experiment-link-container").click(function(event) {
+						event.preventDefault()
+					});
+				} else {
+					$("<a />", {
+						href: "#",
+						text: project.TestName[i]
+					}).appendTo(".experiment-link-container").click(function(event) {
+						event.preventDefault()
+					});
+				}
+
+			}
+
+		}
+	}
+</script>
+<div class="page-container">
+	<div class="guide-container">
+		<div class="guide-content-container">
+			<h1>Hi There!</h1>
+			<p>You will go through several tasks to evaluate touchpad models through this website. This is not a race, try to behave following tasks as normally do. (ie., in your comfortable speed)</p>
+			<p>The moderator will guide you through the study or refer you to instructions on sheets of paper on your desks. If you have any question or any internet issues, please feel free to ask them now.</p>
+			<p>*Soft reminder: turn off or mute your mobile during the study sessions.</p>
+		</div>
+		<div class="experiment-link-container">
+		</div>
+	</div>
+</div>

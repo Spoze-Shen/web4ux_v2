@@ -1,0 +1,33 @@
+<style type="text/css">
+	a.disabled {
+		cursor: not-allowed;
+		background: #DDD !important;
+	}
+</style>
+<script type="text/javascript">
+	var noPrac = <%-data.noPrac%>;
+	function ini() {
+		$.fpLoaded();
+		$("#practice-link").hide();
+		if (project.FittsPracticeRound > 0 && !noPrac) {
+			$("#practice-link").show();
+		}
+		$("#fitts-link").attr("href","/Test-Fitts?subjectId="+subject);
+		$("#practice-link").attr("href","/Test-Fitts-Practice?subjectId="+subject);
+	}
+</script>
+<div class="page-container">
+	<div class="test-guide-container">
+		<!-- <img src="./images/blue-logo.png" alt=""> -->
+		<div class="guide-content-container">
+			<h3 class="test-title">Winfitts (cursor movement and target selected)</h3>
+			<p>Move the cursor by your fingers to select the red dot. Repeat this task until no more red dot shown on screen. This test usually takes about 2~5 minutes to finish. </p>
+			<p>Please move the cursor and click the dot based on your normal speed. Please do the practice session first if there is a practice request.</p>
+			<p>Click <strong>Start</strong> to start this test.</p>
+		</div>
+		<div class="test-control-container">
+			<a id="practice-link" class="test-control-link" style="display:none;" href="/Test-Fitts-Practice">Practice</a>
+			<a id="fitts-link" class="test-control-link" href="">Start</a>
+		</div>
+	</div>
+</div>

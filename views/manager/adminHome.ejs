@@ -1,0 +1,255 @@
+<style type="text/css">
+  .page-label {}
+
+  .account-table-container {
+    margin: 0px auto;
+    padding: 10px 0px;
+  }
+
+  .account-table-container table {
+    width: 100%;
+    border: 1px solid #AAA;
+  }
+
+  .account-table-container table thead td {
+    padding: 5px 10px;
+    background: #999;
+    color: #FFF;
+  }
+
+  .account-table-container table tbody td {
+    padding: 10px;
+  }
+
+  .account-table-container table tbody td button {
+    margin-left: 10px;
+  }
+
+  .account-table-container table tbody td button .fa {
+    color: #AAA;
+    margin-right: 5px;
+  }
+
+  #invite-manager {
+    display: block;
+    margin: 10px auto;
+    width: 900px;
+  }
+
+  #invite-manager input {
+    width: 40%;
+  }
+
+  #invite-manager input:hover {
+    border-color: #007DB8 !important;
+  }
+
+  #invite-manager button {}
+
+  #invite-status {
+    line-height: 40px;
+    font-weight: 500;
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .content-card {
+    background: #FFF;
+    width: 80%;
+    display: block;
+    margin: 5px auto;
+    border: 1px solid rgba(0, 0, 0, .0625);
+    padding: 30px 20px;
+
+  }
+</style>
+
+<div class="page-container">
+  <div class="content-card">
+    <label class="page-label h5">Invite Manager</label>
+    <div id="invite-manager">
+      <div class="form-group">
+        <input type="text" id="invite-name" class="form-control" placeholder="Name">
+      </div>
+      <div class="form-group">
+        <input type="email" id="invite-email" class="form-control" placeholder="Email">
+      </div>
+      <button id="send-invite-btn" class="icon-user-follow btn btn-icon btn-outline-success">Send invitation</button>
+      <div id="invite-status"></div>
+    </div>
+  </div>
+  <div class="content-card">
+    <label class="page-label h5">Manager List</label>
+    <div id="account-list-container" class="account-table-container">
+      <table>
+        <thead>
+          <tr>
+            <td>#</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td align="center">Project Created</td>
+            <td align="center">Admin Permission</td>
+            <td align="right">Function</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="content-card">
+    <label class="page-label h5">New Manager List( Invited )</label>
+    <div id="account-list-container-invited" class="account-table-container">
+      <table>
+        <thead>
+          <tr>
+            <td>#</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td align="center">Project Created</td>
+            <td align="center">Admin Permission</td>
+            <td align="right">Function</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="content-card">
+    <label class="page-label h5">Removed Manager List</label>
+    <div id="account-list-container-removed" class="account-table-container">
+      <table>
+        <thead>
+          <tr>
+            <td>#</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td align="center">Project Created</td>
+            <td align="center">Admin Permission</td>
+            <td align="right">Function</td>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="confirm-remove" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Are you sure?</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Remove manager : <strong id="manager-to-remove" data-id=""></strong></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+        <button id="confirm-manager-remove-btn" type="button" class="btn btn-primary">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  function listManager() {
+    $.get("/listManager").done(function(list) {
+      $("#account-list-container table tbody").html("");
+      $("#account-list-container-invited table tbody").html("");
+      var managerTb = $("#account-list-container table tbody"),
+        managerInvitedTb = $("#account-list-container-invited table tbody"),
+        managerRemoveTb = $("#account-list-container-removed table tbody");
+      $.each(list, function(index, manager) {
+        var admin = (manager.IsAdmin) ? ('<i class="fa fa-check" aria-hidden="true"></i>') : ("");
+        var tr;
+        if (manager.Alive) {
+          if (manager.Invited) {
+            tr = $("<tr />").appendTo(managerInvitedTb);
+          } else {
+            tr = $("<tr />").appendTo(managerTb);
+          }
+        } else {
+          tr = $("<tr />").appendTo(managerRemoveTb);
+        }
+        $("<td>" + (index + 1) + "</td>").appendTo(tr);
+        $("<td>" + manager.Name + "</td>").appendTo(tr);
+        $("<td>" + manager.Email + "</td>").appendTo(tr);
+        $("<td align='center'>" + manager.ProjectCreated.length + "</td>").appendTo(tr);
+        $("<td align='center'>" + admin + "</td>").appendTo(tr);
+        var funcTd = $("<td />", {
+          align: "right"
+        }).appendTo(tr);
+        if (!manager.IsAdmin && manager.Alive) {
+          $("<button />", {
+            class: "btn btn-sm btn-outline-info is-admin-btn",
+            text: "Is Admin",
+            "data-id": manager.id
+          }).prepend('<i class="fa fa-check" aria-hidden="true"></i>').appendTo(funcTd).click(function() {
+            var id = $(this).attr("data-id");
+            $.post("./isAdmin", {
+              id: id,
+              admin: true
+            }).done(function(data) {
+              $(".is-admin-btn[data-id=" + data.id + "]").fadeOut();
+            });
+          });
+        }
+        if (manager.Alive) {
+          $("<button />", {
+            class: "btn btn-sm btn-outline-danger",
+            text: "Remove",
+            "data-id": manager.id,
+            "data-name": manager.Name
+          }).prepend('<i class="fa fa-times" aria-hidden="true"></i>').appendTo(funcTd).click(function() {
+            var id = $(this).attr("data-id"),
+              name = $(this).attr("data-name");
+            $("#manager-to-remove").html(name);
+            $("#manager-to-remove").attr("data-id", id);
+            $("#confirm-remove").modal('toggle');
+          });
+        }
+      });
+    });
+  }
+
+  function emailIsValid(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  }
+
+  function ini() {
+    listManager();
+    $("#send-invite-btn").click(function() {
+      if (!emailIsValid($("#invite-email").val())) {
+        $("#invite-status").html("Error : this email is not valid.");
+      } else {
+        $.post("./inviteManager", {
+          name: $("#invite-name").val(),
+          email: $("#invite-email").val()
+        }).done(function(result) {
+          if (result.error) {
+            console.log(result.error);
+            $("#invite-status").html("Error : this email might exist.");
+          } else {
+            $("#invite-name").val("");
+            $("#invite-email").val("");
+            $("#invite-status").html("Manager invitation has been sent.");
+            listManager();
+          }
+        });
+      }
+    });
+    $("#confirm-manager-remove-btn").click(function() {
+      var id = $("#manager-to-remove").attr("data-id");
+      $.post("./deleteManager", {
+        id: id
+      }).done(function(data) {
+        $("#confirm-remove").modal('toggle');
+        $(".is-admin-btn[data-id=" + data.id + "]").fadeOut();
+      });
+    });
+  }
+</script>

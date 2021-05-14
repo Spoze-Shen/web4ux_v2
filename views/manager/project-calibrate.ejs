@@ -1,0 +1,182 @@
+<style type="text/css">
+	body {
+		overflow-x: hidden !important;
+	}
+
+	.project-container {
+		background: none;
+		border: none;
+		overflow-x: hidden !important;
+	}
+
+	#square-container {}
+
+	#save-device-rang {}
+
+	#back {
+		margin-right: 30px;
+	}
+
+	.func-container {
+		margin-bottom: 15px;
+	}
+
+	.square {
+		color: #FFF;
+		text-align: center;
+		margin-bottom: 30px;
+	}
+
+	.first {
+		width: 80mm;
+		height: 80mm;
+		background: green;
+	}
+
+	.second {
+		background: #999;
+		width: 40mm;
+		height: 40mm;
+	}
+
+	.third {
+		background: #333;
+		width: 20mm;
+		height: 20mm;
+	}
+
+	.info {
+		background: #FFF;
+		border: 1px solid rgba(0, 0, 0, .0625);
+		margin-bottom: 5px;
+		padding-left: 20px;
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+
+	.info-group {
+		line-height: 35px;
+	}
+
+	.info-group label {
+		width: 200px;
+		color: #999;
+	}
+
+	.info-group .value {
+		margin-right: 20px;
+		color: #333;
+		font-weight: 500;
+	}
+
+	#saved-text {
+		margin-left: 20px;
+		font-weight: 500;
+	}
+</style>
+<script type="text/javascript">
+	var device = <%-JSON.stringify(data.device)%>;
+
+	function ini() {
+		$(".project-nav-link[data-nav='devices']").addClass("active");
+		var rang = <%-data.device.Rang%>;
+
+		function setResize(length) {
+			$("#save-device-rang").html("Save Changes (Unsave)");
+			rang = length / 80;
+			$(".second").css({
+				width: (40 * rang) + "px",
+				height: (40 * rang) + "px"
+			});
+			$(".third").css({
+				width: (20 * rang) + "px",
+				height: (20 * rang) + "px"
+			});
+			$("#rang .value").html(rang);
+		};
+		$("body").keydown(function(e) {
+			if (e.keyCode == 37) { // left
+				$(".first").css("width", "-=1");
+				$(".first").css("height", "-=1");
+				setResize($(".first").width());
+			} else if (e.keyCode == 39) { // right
+				$(".first").css("width", "+=1");
+				$(".first").css("height", "+=1");
+				setResize($(".first").width());
+			}
+		});
+
+		if (rang != 1) {
+			$(".first").css({
+				width: (80 * rang) + "px",
+				height: (80 * rang) + "px"
+			});
+			$(".second").css({
+				width: (40 * rang) + "px",
+				height: (40 * rang) + "px"
+			});
+			$(".third").css({
+				width: (20 * rang) + "px",
+				height: (20 * rang) + "px"
+			});
+		}
+
+		$("#resolution .value").html($(document).width() + " * " + $(document).height());
+		//$("#rang").append();
+		$(".first").resizable({
+			stop: function(event, ui) {
+				var length = ui.size.width;
+				$(this).css({
+					width: length + "px",
+					height: length + "px"
+				});
+				setResize(length);
+			}
+		});
+		$("#save-device-rang").click(function() {
+			$("#save-device-rang").html("Saving...");
+			$.post("./calibrateDevice", {
+				rang: rang,
+				id: device.id
+			}).done(function(data) {
+				$("#save-device-rang").html("Saved!");
+				setTimeout(function() {
+					$("#save-device-rang").html("Save Changes");
+				}, 3000);
+			});
+		});
+		$("#back").click(function() {
+			window.location = "./project-devices?id=" + project.id;
+		});
+		console.log(device);
+	}
+</script>
+<div class="project-container">
+	<!-- <div id="square-container"> -->
+	<div class="info">
+		<div class="func-container">
+			<button id="back" class="icon-arrow-left btn-icon btn btn-outline-primary">Back to device list</button>
+			<button id="save-device-rang" class="icon-drawer btn-icon btn btn-outline-info">Save Changes</button>
+			<span id="saved-text"></span>
+		</div>
+		<div class="info-group">
+			<label>Device</label>
+			<span class="value"><%-data.device.ModelName%> - </span>
+			<span class="value"><%-data.device.DeviceName%></span>
+		</div>
+		<div class="info-group" id="resolution">
+			<label>Detected Resolution</label>
+			<span class="value"></span>
+		</div>
+		<div class="info-group" id="rang">
+			<label>Calibrate number</label>
+			<span class="value"><%-data.device.Rang%></span>
+		</div>
+	</div>
+	<div class="info">
+		<div class="first square">80mm</div>
+		<div class="second square">40mm</div>
+		<div class="third square">20mm</div>
+	</div>
+	<!-- </div> -->
+</div>

@@ -1,0 +1,205 @@
+<style type="text/css">
+	.add-editor-container {
+		padding: 20px 20px;
+	}
+
+	#manager-select {
+		line-height: 29px;
+		padding-left: 10px;
+		margin: 10px 0px;
+		border: 1px solid #AAA;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		min-width: 60%;
+		background: none;
+		border-radius: 0px;
+		-webkit-appearance: none;
+		max-height: 200px;
+		overflow-y: auto;
+	}
+
+	#add-manager-btn {}
+
+	.project-permission-radio-group {}
+
+	.permission-radio {}
+
+	.permission-radio .fa-check {}
+
+	.permission-radio .text {}
+
+	.manager-select-group {
+		position: relative;
+	}
+
+	.manager-added-group {}
+
+	.manager-added-container {
+		padding: 20px 10px;
+		border-bottom: 1px solid #DDD;
+	}
+
+	.manager-select-group .cover {
+		position: absolute;
+		background: rgb(250, 250, 250);
+		width: 100%;
+		height: 100%;
+		top: 0px;
+		left: 0px;
+		opacity: 0.5;
+	}
+
+	#add-manager-option-group {}
+
+	#select-all-manager-btn {
+		color: #007DB8;
+		border: none;
+		background: none;
+	}
+
+	#save-permission {}
+
+	#saved-status {
+		margin-left: 20px;
+	}
+</style>
+<script type="text/javascript">
+	function isEditor(id) {
+		var flag = false;
+		for (var i = 0; i < project.Editor.length; i++) {
+			if (project.Editor[i].id == id) {
+				flag = true;
+			}
+		};
+		return flag;
+	};
+
+	function needSave() {
+		$("#save-permission").prop("disabled", false);
+		$("#save-permission").addClass("active");
+		$("#save-permission").html("Save Changes (Unsave)");
+	}
+
+	function ini() {
+		$(".project-nav-link[data-nav='permission']").addClass("active");
+		$.get("/listManager").done(function(list) {
+			//$.fpLoaded();
+			$.each(list, function(i, obj) {
+				if (project.Creator.id != obj.id) {
+					var active = "";
+					if (project.CreaterEditorOnly) {
+						active = (isEditor(obj.id)) ? ("active") : ("");
+					}
+					var group = $("<div />", {
+						id: "add-manager-option-group",
+						class: "radio-group " + active,
+						"data-value": obj.id
+					}).appendTo("#manager-select").click(function() {
+						needSave();
+						if ($(this).hasClass("active")) {
+							$(this).removeClass("active");
+						} else {
+							$(this).addClass("active");
+						}
+					});
+					$("<i />", {
+						class: "fa fa-check"
+					}).appendTo(group);
+					$("<span />", {
+						class: "text",
+						text: obj.Name,
+						"data-value": obj.id
+					}).appendTo(group);
+				}
+			});
+		});
+		if (!project.CreaterEditorOnly) {
+			$("#everyone-permission").addClass("active");
+			$(".manager-select-group .cover").show();
+		} else {
+			$("#onlyme-permission").addClass("active");
+			$(".manager-select-group .cover").hide();
+		}
+		$("#select-all-manager-btn").click(function() {
+			needSave();
+			if ($(this).hasClass("selected")) {
+				$("#manager-select .radio-group").removeClass("active");
+				$(this).removeClass("selected");
+				$(this).html("Select");
+			} else {
+				$("#manager-select .radio-group").addClass("active");
+				$(this).addClass("selected");
+				$(this).html("Unselect");
+			}
+		});
+		$(".permission-radio").click(function() {
+			if ($("#everyone-permission").hasClass("active")) {
+				$("#everyone-permission").removeClass("active");
+				$("#onlyme-permission").addClass("active");
+				$(".manager-select-group .cover").hide();
+				project.CreaterEditorOnly = true;
+				needSave();
+			} else {
+				$("#onlyme-permission").removeClass("active");
+				$("#everyone-permission").addClass("active");
+				$("#manager-select .radio-group").removeClass("active");
+				$(this).removeClass("selected");
+				$(".manager-select-group .cover").show();
+				project.CreaterEditorOnly = false;
+				needSave();
+			}
+		});
+		$("#save-permission").click(function() {
+			$("#save-permission").html("Saving...");
+			//project.Editor.splice(0, project.Editor.length);
+			project.Editor = [];
+			if ($("#manager-select .radio-group.active").length > 0) {
+				$("#manager-select .radio-group.active").each(function() {
+					var value = $(this).attr("data-value");
+					project.Editor.push(value);
+				});
+			};
+			//console.log(project.Editor);
+			$.post("./updateProejct", {
+				id: project.id,
+				Editor: project.Editor,
+				CreaterEditorOnly: project.CreaterEditorOnly
+			}).done(function(data) {
+				$("#save-permission").prop("disabled", true);
+				$("#save-permission").removeClass("active");
+				//$("#saved-status").fadeIn();
+				$("#save-permission").html("Saved!");
+				setTimeout(function() {
+					$("#save-permission").html("Save Changes");
+				}, 3000);
+			});
+		});
+	}
+</script>
+<div class="project-container">
+	<div class="add-editor-container">
+		<div class="project-permission-radio-group">
+			<div class="radio-group permission-radio" id="everyone-permission">
+				<i class="fa fa-check" aria-hidden="true"></i>
+				<span class="text">Everyone can see this project</span>
+			</div>
+			<div class="radio-group permission-radio" id="onlyme-permission">
+				<i class="fa fa-check" aria-hidden="true"></i>
+				<span class="text">Only me or editor can see this project</span>
+			</div>
+		</div>
+		<div class="manager-select-group">
+			<!-- <select id="manager-select"></select> -->
+			<button id="select-all-manager-btn">Select all</button>
+			<div id="manager-select"></div>
+			<div class="note">
+				Note : Editor can view and edit your project setting.
+			</div>
+			<div class="cover"></div>
+		</div>
+		<button class="icon-drawer btn-icon btn btn-outline-info" id="save-permission">Save Changes</button>
+	</div>
+
+</div>

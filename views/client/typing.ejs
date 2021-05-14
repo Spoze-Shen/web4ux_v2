@@ -1,0 +1,470 @@
+<style>
+  html,
+  body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #efeeea;
+  }
+
+  #toolBox {
+    text-align: center;
+    background-color: #0085c6;
+  }
+
+  #toolBox>img {
+    width: 100%;
+    -moz-box-shadow: 3px 0px 10px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 3px 0px 10px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 3px 0px 10px rgba(20%, 20%, 40%, 0.5);
+  }
+
+  textarea {
+    width: 1000px;
+    height: 800px;
+    margin: 10px auto;
+    padding: 20px;
+    box-sizing: border-box;
+    display: block;
+    border: 0px;
+    -moz-box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+  }
+
+  #continue-typing {
+    color: blue;
+    background: none;
+    line-height: initial;
+    font-size: inherit;
+    border: none;
+    padding: 0px;
+  }
+
+  #finished-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #FFF;
+    border: 1px solid #AAA;
+    font-size: 18px;
+    border-radius: 3px;
+    -moz-box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 3px 3px 20px rgba(20%, 20%, 40%, 0.5);
+    background: #1587C3;
+    color: #FFF;
+    padding: 10px;
+  }
+
+  #note {
+    text-align: -webkit-center;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+  }
+</style>
+<script type="text/javascript">
+  /*每次拖曳產生的輸出資料*/
+
+  var typingLogMove = {
+    //pid: "",
+    EventStartTime: "",
+    EventEndTime: "",
+    EventStartPosition: { //事件產生的位置
+      x: 0,
+      y: 0
+    },
+    EventEndPosition: { //事件產生的位置
+      x: 0,
+      y: 0
+    },
+    // subjectName: "",
+    // model: "",
+    StartTestTime: "",
+    EndTestTime: "",
+    TotalDuration: 0,
+    Typing: false,
+    EventType: "",
+    ClickOnTollbar: false, //特殊事件，是否點擊在toolbar上
+    TypingContent: "",
+    Counter: 1
+  };
+
+  var typingLogElse = {
+    // pid: "",
+    EventStartTime: "",
+    EventEndTime: "",
+    EventStartPosition: { //事件產生的位置
+      x: 0,
+      y: 0
+    },
+    EventEndPosition: { //事件產生的位置
+      x: 0,
+      y: 0
+    },
+    // subjectName: "",
+    // model: "",
+    StartTestTime: "",
+    EndTestTime: "",
+    TotalDuration: 0,
+    Typing: false,
+    EventType: "",
+    ClickOnTollbar: false, //特殊事件，是否點擊在toolbar上
+    TypingContent: "",
+    Counter: 1
+  };
+  var startTime = 0;
+  var timeout = null;
+  var mousemoving = false;
+  var lastMove = {
+    x: 0,
+    y: 0
+  };
+  var currMove = {
+    x: 0,
+    y: 0
+  };
+
+  var socket;
+  var disConned = false;
+  var lostConnectionStarTime = 0;
+  var lostConnectionDuration = 0;
+  var onEndingTesting = false;
+
+  function onlistenConnection() {
+    setInterval(function() {
+      var online = navigator.onLine;
+      if (!online) {
+        disConned = true;
+        lostConnectionStarTime = moment().format("x");
+        lostConnectionPopup("Lost connection...Try to reconnect...", function() {}, false);
+      }
+      if (online && disConned) {
+        lostConnectionPopup("Connected! Please press OK to continue.", function() {
+          disConned = false;
+          lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+        }, true);
+      }
+    }, 200);
+    socket = io.connect();
+    socket.on('reconnect', function() {
+      lostConnectionPopup("Connected! Please press OK to continue.", function() {
+        lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+      }, true);
+    });
+    socket.on('disconnect', function() {
+      lostConnectionStarTime = moment().format("x");
+      lostConnectionPopup("Lost connection...Try to reconnect...", function() {}, false);
+    });
+  }
+
+  function logMouseMove(data) {
+    typingLogMove.Typing = (!data.Typing) ? (typingLogMove.Typing) : (data.Typing);
+    typingLogMove.EventType = (!data.EventType) ? (typingLogMove.EventType) : (data.EventType);
+    typingLogMove.EventStartTime = (!data.EventStartTime) ? (typingLogMove.EventStartTime) : (data.EventStartTime);
+    typingLogMove.EventEndTime = (!data.EventEndTime) ? (typingLogMove.EventEndTime) : (data.EventEndTime);
+    typingLogMove.EventStartPosition.x = (!data.EventStartPositionX) ? (typingLogMove.EventStartPosition.x) : (data.EventStartPositionX);
+    typingLogMove.EventStartPosition.y = (!data.EventStartPositionY) ? (typingLogMove.EventStartPosition.y) : (data.EventStartPositionY);
+    typingLogMove.EventEndPosition.x = (!data.EventEndPositionX) ? (typingLogMove.EventEndPosition.x) : (data.EventEndPositionX);
+    typingLogMove.EventEndPosition.y = (!data.EventEndPositionY) ? (typingLogMove.EventEndPosition.y) : (data.EventEndPositionY);
+    typingLogMove.ClickOnTollbar = (!data.ClickOnTollbar) ? (typingLogMove.ClickOnTollbar) : (data.ClickOnTollbar);
+    typingLogMove.TypingContent = (!data.TypingContent) ? (typingLogMove.TypingContent) : (data.TypingContent);
+    typingLogMove.TotalDuration = moment().format("x") - startTime - lostConnectionDuration;
+    typingLogMove.EventDuration = parseInt(typingLogMove.EventEndTime) - parseInt(typingLogMove.EventStartTime);
+  }
+
+  function logMouseElse(data) {
+    typingLogElse.Typing = (!data.Typing) ? (typingLogElse.Typing) : (data.Typing);
+    typingLogElse.EventType = (!data.EventType) ? (typingLogElse.EventType) : (data.EventType);
+    typingLogElse.EventStartTime = (!data.EventStartTime) ? (typingLogElse.EventStartTime) : (data.EventStartTime);
+    typingLogElse.EventEndTime = (!data.EventEndTime) ? (typingLogElse.EventEndTime) : (data.EventEndTime);
+    typingLogElse.EventStartPosition.x = (!data.EventStartPositionX) ? (typingLogElse.EventStartPosition.x) : (data.EventStartPositionX);
+    typingLogElse.EventStartPosition.y = (!data.EventStartPositionY) ? (typingLogElse.EventStartPosition.y) : (data.EventStartPositionY);
+    typingLogElse.EventEndPosition.x = (!data.EventEndPositionX) ? (typingLogElse.EventEndPosition.x) : (data.EventEndPositionX);
+    typingLogElse.EventEndPosition.y = (!data.EventEndPositionY) ? (typingLogElse.EventEndPosition.y) : (data.EventEndPositionY);
+    typingLogElse.ClickOnTollbar = (!data.ClickOnTollbar) ? (typingLogElse.ClickOnTollbar) : (data.ClickOnTollbar);
+    typingLogElse.TypingContent = (!data.TypingContent) ? (typingLogElse.TypingContent) : (data.TypingContent);
+    typingLogElse.TotalDuration = moment().format("x") - startTime - lostConnectionDuration;
+  }
+
+  function trackingMouse() {
+    //clearTimeout(timeout);
+    timeout = setInterval(function() {
+      if (currMove.x == lastMove.x && currMove.y == lastMove.y) {
+        clearTimeout(timeout);
+        logMouseMove({
+          EventType: "mousemove",
+          EventEndTime: moment().format("x"),
+          EventEndPosition: {
+            x: currMove.x,
+            y: currMove.y
+          },
+          TypingContent: $("#typingArea").val()
+        });
+        mousemoving = false;
+        var eachTemp = typingLogMove;
+        // console.log(eachTemp);
+        eachTemp.Project = project.id;
+        eachTemp.ProjectDevice = device.id;
+        eachTemp.Subject = subject;
+        $.post("./typingRecord", eachTemp, function(record) {
+          console.log(record);
+          if (record.error) {
+            alert("System error!");
+          }
+        });
+      } else {
+        lastMove.x = currMove.x;
+        lastMove.y = currMove.y;
+      }
+    }, 100);
+  }
+
+  function pressEsc() {
+    onEndingTesting = true;
+    
+    $("body, textarea").css({
+      cursor: 'default'
+    });
+    $(".finish-test-popup-container").fadeIn();
+  }
+
+  function ini() {
+    needConfirmRefresh=true;
+    startTime = moment().format("x");
+    // typingLogMove.pid = subjectCookie.projectId;
+    // typingLogMove.subjectName = subjectCookie.subjectName;
+    // typingLogMove.model = subjectCookie.subjectDevice;
+    typingLogMove.StartTestTime = startTime;
+
+    // typingLogElse.pid = subjectCookie.projectId;
+    // typingLogElse.subjectName = subjectCookie.subjectName;
+    // typingLogElse.model = subjectCookie.subjectDevice;
+    typingLogElse.StartTestTime = startTime;
+    // $(document).keydown(function(e) {
+    //   if (e.keyCode == 27) {
+    //     e.preventDefault();
+    //     pressEsc();
+    //   }
+    // });
+    document.onkeydown = function(evt) {
+      evt = evt || window.event;
+      var isEscape = false;
+      if ("key" in evt) {
+        isEscape = (evt.key == "Escape" || evt.key == "Esc");
+      } else {
+        isEscape = (evt.keyCode == 27);
+      }
+      if (isEscape) {
+        pressEsc();
+      }
+    };
+    $("#finish-typing").click(function(e) {
+      e.preventDefault();
+      needConfirmRefresh=false;
+      logMouseElse({
+        EventType: "endTest",
+        EventStartTime: moment().format("x"),
+        EventEndTime: moment().format("x"),
+        EndTestTime: moment().format("x"),
+        EventStartPosition: {
+          x: event.pageX,
+          y: event.pageY
+        },
+        EventEndPosition: {
+          x: 0,
+          y: 0
+        },
+        ClickOnTollbar: false,
+        TypingContent: $("#typingArea").val()
+      });
+      var eachTemp = typingLogElse;
+      eachTemp.Project = project.id;
+      eachTemp.ProjectDevice = device.id;
+      eachTemp.Subject = subject;
+      $.post("./typingRecord", eachTemp, function(record) {
+        if (record.error) {
+          alert("System error!");
+        } else {
+          window.location = "./finishOneTest?subjectId="+subject;
+        }
+      });
+    });
+    $("#continue-typing").click(function(e) {
+      e.preventDefault();
+      setTimeout(function() {
+        onEndingTesting = false;
+      }, 1000);
+      $("body, textarea").css({
+        cursor: 'none'
+      });
+      $(".finish-test-popup-container").fadeOut();
+    });
+    $("body").bind('mousewheel', function(event) {
+      if (!onEndingTesting) {
+        if (typingLogMove.Typing) {
+          logMouseElse({
+            EventType: "mousewheel",
+            EventStartTime: moment().format("x"),
+            EventEndTime: "",
+            EventStartPosition: {
+              x: event.pageX,
+              y: event.pageY
+            },
+            EventEndPosition: {
+              x: 0,
+              y: 0
+            },
+            ClickOnTollbar: false,
+            TypingContent: $("#typingArea").val()
+          });
+          var eachTemp = typingLogElse;
+          eachTemp.Project = project.id;
+          eachTemp.ProjectDevice = device.id;
+          eachTemp.Subject = subject;
+          $.post("./typingRecord", eachTemp, function(record) {
+            console.log(record);
+            if (record.error) {
+              alert("System error!");
+            }
+          });
+        }
+      }
+    });
+    $("#toolBox").click(function(event) { //紀錄點擊到toolkit
+      event.preventDefault();
+      event.stopPropagation();
+      if (!onEndingTesting) {
+        logMouseElse({
+          EventType: "clickToolbar",
+          EventStartTime: moment().format("x"),
+          EventEndTime: "",
+          EventStartPosition: {
+            x: event.pageX,
+            y: event.pageY
+          },
+          EventEndPosition: {
+            x: 0,
+            y: 0
+          },
+          ClickOnTollbar: true,
+          TypingContent: $("#typingArea").val()
+        });
+        var eachTemp = typingLogElse;
+        eachTemp.Project = project.id;
+        eachTemp.ProjectDevice = device.id;
+        eachTemp.Subject = subject;
+        $.post("./typingRecord", eachTemp, function(record) {
+          console.log(record);
+          if (record.error) {
+            alert("System error!");
+          }
+
+        });
+      }
+    });
+    $("body").mousedown(function(event) {
+      if (!onEndingTesting) {
+        if (typingLogMove.Typing) {
+          logMouseElse({
+            EventType: "click",
+            EventStartTime: moment().format("x"),
+            EventEndTime: "",
+            EventStartPosition: {
+              x: event.pageX,
+              y: event.pageY
+            },
+            EventEndPosition: {
+              x: 0,
+              y: 0
+            },
+            ClickOnTollbar: false,
+            TypingContent: $("#typingArea").val()
+          });
+        }
+      }
+    });
+    $("body").mouseup(function(event) {
+      if (!onEndingTesting) {
+        if (typingLogMove.Typing) {
+          logMouseElse({
+            EventType: "click",
+            EventEndTime: moment().format("x"),
+            EventEndPosition: {
+              x: event.pageX,
+              y: event.pageY
+            },
+            ClickOnTollbar: false,
+            TypingContent: $("#typingArea").val()
+          });
+          var eachTemp = typingLogElse;
+          eachTemp.Project = project.id;
+          eachTemp.ProjectDevice = device.id;
+          eachTemp.Subject = subject;
+          $.post("./typingRecord", eachTemp, function(record) {
+            console.log(record);
+            if (record.error) {
+              alert("System error!");
+            }
+          });
+        }
+      }
+    });
+
+    $("body").mousemove(function(event) {
+      if (!onEndingTesting) {
+        $("body, textarea").css({
+          cursor: 'inherit'
+        });
+        if (typingLogMove.Typing && !mousemoving) { //mouse start moving
+          mousemoving = true;
+          logMouseMove({
+            EventType: "mousemove",
+            EventStartTime: moment().format("x"),
+            EventEndTime: "",
+            EventStartPosition: {
+              x: event.pageX,
+              y: event.pageY
+            },
+            EventEndPosition: {
+              x: 0,
+              y: 0
+            },
+            ClickOnTollbar: false,
+            TypingContent: $("#typingArea").val()
+          });
+          trackingMouse();
+        } else {
+          currMove.x = event.pageX;
+          currMove.y = event.pageY;
+        }
+      }
+    });
+    $("textarea").bind('input propertychange', function() {
+      typingLogMove.Typing = true;
+      if (!onEndingTesting) {
+        $("body, textarea").css({
+          cursor: 'none'
+        });
+      }
+    }).focusout(function(event) {
+      $("textarea").focus();
+    });
+    onlistenConnection();
+  }
+</script>
+<div id="toolBox"><img src="./images/typingToolBar.png"></div>
+<p id="note">Press "Esc" to finish this test.</p>
+<textarea autofocus="" style="cursor: inherit;" id="typingArea"></textarea>
+<div class="finish-test-popup-container">
+  <div class="finish-wrapper">
+    <div class="finish-content">
+      Please click Finish button to finish this test.
+    </div>
+    <div class="finish-test-fun-container">
+      <button class="btn btn-success" id="finish-typing">Finish</button>
+    </div>
+    <div class="finish-content">Or <button class="" id="continue-typing">Back</button> to test, if you haven't finish this test.</div>
+  </div>
+</div>

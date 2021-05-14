@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TP 2.0</title>
+  <!-- Viewport mobile tag for sensible mobile support -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style type="text/css">
+  </style>
+  <!--STYLES-->
+  <link rel="stylesheet" href="/min/production.min.css">
+  <!--STYLES END-->
+  <style type="text/css">
+    .project-wrapper {
+      display: block;
+      margin: 0px auto;
+      position: relative;
+    }
+
+    .project-wrapper .left {
+      width: 25%;
+      position: absolute;
+      left: 5px;
+      top: 5px;
+    }
+
+    .project-wrapper .right {
+      display: inline-block;
+      width: 74%;
+      height: 90vh;
+      display: table-cell;
+      position: absolute;
+      right: 5px;
+      top: 5px;
+    }
+
+    .project-head {
+      display: block;
+      background: #FFF;
+      width: 100%;
+      border: 1px solid rgba(0, 0, 0, .0625);
+      margin-bottom: 5px;
+    }
+
+    .project-head #project-name {
+      font-size: 18px;
+      font-weight: 500;
+      margin-right: 10px;
+      border: none;
+      padding: 0px;
+    }
+
+    .project-head #project-name:focus {
+      border-bottom: 1px solid #AAA;
+    }
+
+    .project-head #project-link {
+      /* display: block; */
+    }
+
+    .project-head #project-owner-container {
+      /* color: #999;
+      line-height: 30px;
+      font-size: 20px; */
+    }
+
+    .project-head #project-owner-container .manager {}
+
+    .project-head #project-owner-container .fa {
+      /* color: inherit; */
+    }
+
+    .project-nav {
+      display: inline-block;
+      width: 100%;
+      background: #FFF;
+      border: 1px solid rgba(0, 0, 0, .0625);
+      padding-left: 30px;
+    }
+
+    .project-nav .project-nav-link {
+      line-height: 20px;
+      padding: 18px 15px;
+    }
+
+    .project-nav .project-nav-link span {
+      color: #94999c;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .project-nav .project-nav-link:hover>span {
+      color: #333;
+    }
+
+    .project-nav .project-nav-link.active span {
+      color: #333;
+    }
+
+    .project-nav .project-nav-sub-link {
+      padding-left: 45px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .project-container {
+      display: inline-block;
+      background: #FFF;
+      border: 1px solid rgba(0, 0, 0, .0625);
+      width: 100%;
+      min-height: 100%;
+    }
+
+    #update-project-name-btn {
+      display: none;
+    }
+
+    #back-console-link {
+      text-decoration: none;
+      font-size: 16px;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+
+
+    .project-nav .project-nav-link.disable {
+      cursor: default !important;
+    }
+
+    .project-nav .project-nav-link.disable span {
+      color: #333;
+    }
+
+    .project-nav .project-nav-link.disable:hover>span {
+      color: #333 !important;
+    }
+
+    .fa {
+      color: inherit;
+    }
+
+    .tab-btn-container::after {
+      content: "";
+      clear: both;
+      display: table;
+    }
+
+    #copyLogTable {
+      float: right;
+    }
+
+    .project-func-container .btn-icon {
+      border-radius: 50px;
+      width: 50px;
+      line-height: 35px;
+      margin: 0px 10px;
+    }
+
+    .project-func-container .btn-icon:before {
+      margin-right: 0px;
+    }
+
+    #manager-info-container {
+      z-index: 999;
+    }
+
+    #manager-name {}
+
+    #manager-name:active,
+    #manager-name:focus {
+      outline: none !important;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+    }
+
+    #manager-info-container .dropdown-menu {}
+
+    .progress {
+      margin: 20px 0px;
+    }
+
+    #loading-percentage {
+      transition-property: all;
+      transition-duration: 0.5s;
+      transition-timing-function: ease-in-out;
+      transition-delay: 0s;
+    }
+
+    .table {
+      font-size: 12px;
+    }
+
+    .table>thead {}
+
+    .table>tbody * {
+      border-color: #FFF;
+      background: #EEE;
+    }
+
+    .table td {
+      padding: 0px !important;
+      font-size: smaller;
+    }
+
+    .table thead td {
+      /* color: #FFF; */
+      padding: 5px 5px !important;
+      white-space: nowrap;
+    }
+
+    .table tbody td {
+      padding: 5px !important;
+    }
+
+    .table-title {
+      padding: 10px 5px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #333;
+    }
+
+    .table-title {
+      padding: 10px 5px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <div id='loader'>
+    <div class="spinner"></div>
+  </div>
+  <script>
+    window.addEventListener('load', () => {
+      const loader = document.getElementById('loader');
+      setTimeout(() => {
+        loader.classList.add('fadeOut');
+      }, 300);
+    });
+  </script>
+  <div class="manager-nav-container">
+    <a href="./" id="back-console-link" class="logo-home-label">
+      <img id="login-brand-img" src="./images/blue-logo.png" alt="">
+      <span id="logo-text">TouchPad Experiment</span>
+    </a>
+    <div id="manager-info-container" class="dropdown manager-info-container">
+      <button class="btn icon-user btn-icon dropdown-toggle" type="button" id="manager-name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><%-data.manager.Name%></button>
+      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+        <a class="icon-settings btn-icon dropdown-item" href="/myAccount">My Account</a>
+        <a class="icon-user-following btn-icon dropdown-item" href="/adminHome">Admin Console</a>
+        <a class="icon-logout btn-icon dropdown-item" href="/managerLogout">Log out</a>
+      </div>
+    </div>
+  </div>
+  <div class="project-wrapper">
+    <div class="left">
+      <!-- <div class="project-head">
+        <input id="project-name" type="text" value="<%-data.project.Name%>" />
+        <button class="border-btn" id="update-project-name-btn">Update</button>
+        <a id="project-link" class="icon-link" target="blank" href="/experimentLogin?id=<%-data.project.id%>">
+          Experiment Link
+        </a>
+        <div id="project-owner-container">
+          <span class="icon-user manager"></span>
+        </div>
+      </div> -->
+      <div class="card text-center project-head">
+        <div class="card-header bg-info">
+          <div class="icon-user btn-icon manager-name text-light">
+            <%-data.project.Creator.Name%>
+          </div>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title project-name"><%-data.project.Name%></h5>
+          <div class="project-func-container">
+            <a title="" class="icon-link btn btn-icon btn-outline-primary" target="blank" href="/experimentLogin?id=<%-data.project.id%>" data-toggle="tooltip" data-placement="bottom" data-original-title="Experiment Link"></a>
+          </div>
+        </div>
+        <div class="card-footer text-muted project-date bg-white icon-calendar btn-icon">2018/03/21</div>
+      </div>
+      <div class="project-nav">
+        <a class="icon-settings btn-icon nav-link text-info project-nav-link disable" href="#">
+          <span>Settings</span>
+        </a>
+        <a class="icon-share btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-setting?id=<%-data.project.id%>" data-nav="setting">
+          <span>Test Order</span>
+        </a>
+        <a class="icon-screen-desktop btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-devices?id=<%-data.project.id%>" data-nav="devices">
+          <span>Devices</span>
+        </a>
+        <a class="icon-user-follow btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-permission?id=<%-data.project.id%>" data-nav="permission">
+          <span>Permission</span>
+        </a>
+        <a class="icon-cursor btn-icon nav-link text-info project-nav-link disable" href="#"><span>Winfitts</span></a>
+        <a class="icon-calculator btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-fitts-result?id=<%-data.project.id%>" data-nav="fitts-result"><span>Result</span></a>
+        <a class="icon-book-open btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-fitts-raw?id=<%-data.project.id%>" data-nav="fitts-raw"><span>Raw Data</span></a>
+        <a class="icon-layers btn-icon nav-link text-info project-nav-link disable" href="#"><span>Drag and Drop</span></a>
+        <a class="icon-calculator btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-drag-result?id=<%-data.project.id%>" data-nav="drag-result"><span>Result</span></a>
+        <a class="icon-book-open btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-drag-raw?id=<%-data.project.id%>" data-nav="drag-raw"><span>Raw Data</span></a>
+        <a class="icon-screen-tablet btn-icon nav-link text-info project-nav-link disable" href="#"><span>Typing</span></a>
+        <a class="icon-calculator btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-typing-result?id=<%-data.project.id%>" data-nav="typing-result"><span>Result</span></a>
+        <a class="icon-book-open btn-icon nav-link text-primary project-nav-link project-nav-sub-link" href="/project-typing-raw?id=<%-data.project.id%>" data-nav="typing-raw"><span>Raw Data</span></a>
+      </div>
+    </div>
+    <div class="right">
+      <%- body %>
+    </div>
+  </div>
+  <!-- <div id="footer">
+        This is footer </div> -->
+  <!--SCRIPTS-->
+  <script src="/min/production.min.js"></script>
+  <!--SCRIPTS END-->
+  <script src="https://use.fontawesome.com/dbb9cb4177.js"></script>
+  <script src="/js/plugins/raphael.js"></script>
+  <script src="/js/plugins/morris.js"></script>
+  <script type="text/javascript">
+    var manager = <%-JSON.stringify(data.manager)%>;
+    var project = <%-JSON.stringify(data.project)%>;
+    $(document).ready(function() {
+      //$.fpLoading();
+      console.log(project);
+      $(".project-head .project-date").html(moment(project.createdAt).format("YYYY/MM/DD"));
+      ini();
+      $("#project-name").click(function() {
+        $("#update-project-name-btn").fadeIn();
+      });
+      $("#update-project-name-btn").click(function() {
+        $.post("/updateProejct", {
+          id: project.id,
+          Name: $("#project-name").val()
+        }).done(function() {
+          $("#update-project-name-btn").fadeOut();
+        });
+      });
+      $(".disable").click(function(event) {
+        event.preventDefault()
+      });
+      $(".manager-info-container").click(function() {
+        if ($(".manager-account-drop-down").hasClass("active")) {
+          $(".manager-account-drop-down").hide();
+          $(".manager-account-drop-down").removeClass("active");
+        } else {
+          $(".manager-account-drop-down").show();
+          $(".manager-account-drop-down").addClass("active");
+        }
+      });
+      $(".project-wrapper").click(function() {
+        if ($(".manager-account-drop-down").hasClass("active")) {
+          $(".manager-account-drop-down").hide();
+          $(".manager-account-drop-down").removeClass("active");
+        }
+      });
+    });
+
+    function selectElementContents(elementId) {
+      var el = document.getElementById(elementId);
+      var body = document.body,
+        range, sel;
+      if (document.createRange && window.getSelection) {
+        range = document.createRange();
+        sel = window.getSelection();
+        sel.removeAllRanges();
+        try {
+          range.selectNodeContents(el);
+          sel.addRange(range);
+        } catch (e) {
+          range.selectNode(el);
+          sel.addRange(range);
+        }
+      } else if (body.createTextRange) {
+        range = body.createTextRange();
+        range.moveToElementText(el);
+        range.select();
+      }
+      document.execCommand("Copy", false, null);
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,505 @@
+<style type="text/css">
+  body {
+    margin: 0;
+  }
+
+  #testWrapper {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .startPoint {
+    position: absolute;
+    background-color: #F00;
+    /*border:1px #090 solid;*/
+    width: 5mm;
+    height: 5mm;
+    border-radius: 50mm;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
+  #start-text {
+    position: absolute;
+    -webkit-transform: translate(-50%, -150%);
+    transform: translate(-50%, -150%);
+  }
+
+  .targetPoint {
+    position: absolute;
+    background-color: #AAA;
+    /*border:1px #06F solid;*/
+    width: 10mm;
+    height: 10mm;
+    border-radius: 50mm;
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+
+  #target-text {
+    position: absolute;
+    -webkit-transform: translate(-50%, -110%);
+    transform: translate(-50%, -110%);
+  }
+
+  #txt1 {
+    position: absolute;
+    top: -30px;
+    color: #333;
+    font-size: 20px;
+  }
+
+  #txt2 {
+    position: absolute;
+    top: -30px;
+    color: #333;
+    font-size: 20px;
+  }
+
+  .notActivePoint {
+    opacity: 0.3;
+  }
+
+  .finish-btn {
+    margin: 10px auto;
+  }
+</style>
+<script type="text/javascript">
+  var end_t = 0,
+    win_w = 0,
+    win_h = 0,
+    px = 0,
+    py = 0,
+    clickCount = 0,
+    startTestingTime = 0,
+    disConnTime = 0;
+  var testSettings = {
+    rang: 1,
+    nowRounds: 0,
+    total1Rounds: 10, //實驗次數;
+    ID: [],
+    W: [],
+    D: [],
+    angales: [0, 45, 315, 135, 180, 225],
+    IDSet: [],
+    angaleSet: []
+  };
+  var angleTable = [
+    [],
+    []
+  ];
+  /*
+  Target is left
+  135 180 225
+  Right
+  0 45 315
+  */
+  var lostConnectionStarTime = 0;
+  var lostConnectionDuration = 0;
+
+  /*每次事件產生的輸出資料*/
+
+  var eachClickData = {
+    // Project: "",
+    // Subject: "",
+    // ProjectDevice: "",
+    IsFailTrail: false,
+    IsPractice: true,
+    Round: 1, //第幾回合
+    ClickOn: "", //Else Start Target
+    ClickTime: "",
+    Success: false, //此次點擊是失敗還是成功，成功點擊到起始點或目標點都記錄為True
+    StartClicked: false,
+    StartTime: "", //點擊起始點時間，如果這次點擊是點擊在起始點上，記錄此時間
+    EndTime: "", //點擊目標點時間，如果這次點擊是點擊在目標點上，記錄此時間
+    StartPointPosition: {
+      //此回合產生出來的起始點的位置
+      x: 0,
+      y: 0
+    },
+    TargetPointPosition: {
+      //此回合產生出來的起始點的位置
+      x: 0,
+      y: 0
+    },
+    ID: 0, //此回合隨機到的ID;
+    Distance: 0, //此回合計算出來的長度;
+    TargetPointWidth: 0, //此回合目標點產生的大小;
+    Angle: 0,
+    Duration: 0, //經過的時間，從點擊起始點，到成功點及目標點的經過時間，如果此次點擊是點在Target上;
+    Period: 0 //實驗開始現在經過的時間
+  };
+
+  function findMacDistance() {
+    var maxD = 0;
+    for (var i = 0; i < testSettings.D.length; i++) {
+      if (testSettings.D[i] > maxD) {
+        maxD = testSettings.D[i];
+      }
+    };
+    return maxD;
+  }
+
+  function checkConnection() {
+    setTimeout(function() {
+      var online = navigator.onLine;
+      //console.log('check', online);
+      if (!online) {
+        checkConnection();
+      }
+    }, 1000);
+  }
+
+  function logClick(log) {
+    log.Project = project.id;
+    log.ProjectDevice = device.id;
+    log.Subject = subject;
+    $.post("./fittsLawRecord", log).done(function(record) {
+      if (record.error) {
+        //alert("System error!");
+        //console.log(record);
+      } else {
+        console.log(record);
+      }
+    }).fail(function() {
+      if (log.clickOn == "Start") {
+        $(".startPoint").css({
+          "background-color": "#F00",
+          "opacity": "1"
+        });
+        $(".targetPoint").css({
+          "background-color": "#AAA",
+          "opacity": "0.3"
+        });
+        $("#start-text").css({
+          "opacity": "1"
+        });
+        $("#target-text").css({
+          "opacity": "0.3"
+        });
+        disConned = true;
+        disConnTime = moment().format("x");
+        checkConnection();
+      } else if (log.clickOn == "Target") {
+        $(".startPoint").css({
+          "background-color": "#AAA",
+          "opacity": "0.3"
+        });
+        $(".targetPoint").css({
+          "background-color": "#F00",
+          "opacity": "1"
+        });
+        $("#start-text").css({
+          "opacity": "0.3"
+        });
+        $("#target-text").css({
+          "opacity": "1"
+        });
+        disConned = true;
+        disConnTime = moment().format("x");
+        checkConnection();
+      }
+    });
+  }
+
+  function onlistenClicks() {
+    $(".startPoint").click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (eachClickData.StartClicked) {
+        eachClickData.Success = false;
+        eachClickData.ClickOn = "Else";
+        eachClickData.ClickTime = moment().format("x");
+        eachClickData.Period = moment().format("x") - startTestingTime - lostConnectionDuration;
+        eachClickData.IsFailTrail = (eachClickData.StartClicked)?(true):(false);
+        var eachTemp = eachClickData;
+        //console.log(eachTemp);
+        return false;
+      }
+      $(".startPoint").css({
+        "background-color": "#AAA",
+        "opacity": "0.3"
+      });
+      $(".targetPoint").css({
+        "background-color": "#F00",
+        "opacity": "1"
+      });
+      $("#start-text").css({
+        "opacity": "0.3"
+      });
+      $("#target-text").css({
+        "opacity": "1"
+      });
+      eachClickData.Success = true;
+      eachClickData.StartClicked = true;
+      eachClickData.ClickOn = "Start";
+      eachClickData.ClickTime = moment().format("x");
+      eachClickData.StartTime = moment().format("x");
+      eachClickData.Period = moment().format("x") - startTestingTime - lostConnectionDuration;
+      var eachTemp = eachClickData;
+      logClick(eachTemp);
+    });
+    $(".targetPoint").click(function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!eachClickData.StartClicked) {
+        eachClickData.Success = false;
+        eachClickData.ClickOn = "Else";
+        eachClickData.ClickTime = moment().format("x");
+        eachClickData.IsFailTrail = (eachClickData.StartClicked)?(true):(false);
+        var eachTemp = eachClickData;
+        //console.log(eachTemp);
+        return false;
+      }
+      eachClickData.Success = true;
+      eachClickData.ClickOn = "Target";
+      eachClickData.ClickTime = moment().format("x");
+      eachClickData.EndTime = moment().format("x");
+      eachClickData.Period = moment().format("x") - startTestingTime - lostConnectionDuration;
+      var a = moment(eachClickData.StartTime, "x"),
+        b = moment(eachClickData.EndTime, "x");
+      eachClickData.Duration = b.diff(a);
+      var eachTemp = eachClickData;
+      logClick(eachTemp);
+      $(this).hide();
+      $(".startPoint").hide();
+      $(".startPoint").css({
+        "background-color": "#F00",
+        "opacity": "1"
+      });
+      $(".targetPoint").css({
+        "background-color": "#AAA",
+        "opacity": "0.3"
+      });
+      $("#start-text").css({
+        "opacity": "1"
+      });
+      $("#target-text").css({
+        "opacity": "0.3"
+      });
+      if (eachClickData.Round == testSettings.total1Rounds) {
+        $(".finish-test-popup-container").fadeIn();
+      } else {
+        //randomPoints(px, py);
+        eachClickData.Round += 1;
+        newRound();
+      }
+    });
+    $("#testWrapper").click(function(e) {
+      eachClickData.Success = false;
+      eachClickData.ClickOn = "Else";
+      eachClickData.ClickTime = moment().format("x");
+      eachClickData.Period = moment().format("x") - startTestingTime - lostConnectionDuration;
+      eachClickData.IsFailTrail = (eachClickData.StartClicked)?(true):(false);
+      var eachTemp = eachClickData;
+      logClick(eachTemp);
+    });
+  }
+  var failCounts = 0;
+  var lastTargetSide = -1;
+
+  function getRandomX(angle, randomSide, d, w) {
+    var halfWinW = win_w / 2;
+    /*
+    if(angle == 0 && randomSide == 1 && d > (win_w/2) * 0.8){
+        return ((Math.random() * (win_w - w * 2)) + w).toFixed();
+    }
+    else if(angle == 180 && randomSide == 0 && d > (win_w/2) * 0.8){
+        return ((Math.random() * (win_w - w * 2)) + w).toFixed();
+    }
+    */
+    if (d > (win_w / 2) * 0.8) {
+      return ((Math.random() * (win_w - w * 2)) + w).toFixed();
+    } else {
+      return ((Math.random() * (halfWinW - w * 2)) + w + (halfWinW * randomSide)).toFixed();
+    }
+  }
+
+  function getStartPosition(d, angle, randomNumberX, randomNumberY) {
+    var p = [win_w / 2, win_h / 2]; //in px
+    d = d * testSettings.rang; //in px
+    d = (angle == 0 || angle == 180) ? (d) : (Math.sqrt(Math.pow(d, 2) / 2));
+    p[0] = (angle == 0 || angle == 45 || angle == 315) ? (p[0] - (d / 2)) : (p[0] + (d / 2));
+    if (angle == 0 || angle == 45 || angle == 315) { //start is left
+      if (angle == 45) {
+        p[1] = p[1] - (d / 2);
+      } else if (angle == 315) {
+        p[1] = p[1] + (d / 2);
+      }
+    } else { //135 180 225
+      if (angle == 135) {
+        p[1] = p[1] - (d / 2);
+      } else if (angle == 225) {
+        p[1] = p[1] + (d / 2);
+      }
+    }
+    p[0] = p[0] + randomNumberX;
+    p[1] = p[1] + randomNumberY;
+    return p;
+  }
+
+  function getTagetPosition(d, angle, randomNumberX, randomNumberY) {
+    var p = [win_w / 2, win_h / 2]; //in px
+    d = d * testSettings.rang; //in px
+    d = (angle == 0 || angle == 180) ? (d) : (Math.sqrt(Math.pow(d, 2) / 2));
+    p[0] = (angle == 0 || angle == 45 || angle == 315) ? (p[0] + (d / 2)) : (p[0] - (d / 2));
+    if (angle == 0 || angle == 45 || angle == 315) { //start is left
+      if (angle == 45) {
+        p[1] = p[1] + (d / 2);
+      } else if (angle == 315) {
+        p[1] = p[1] - (d / 2);
+      }
+    } else { //135 180 225
+      if (angle == 135) {
+        p[1] = p[1] + (d / 2);
+      } else if (angle == 225) {
+        p[1] = p[1] - (d / 2);
+      }
+    }
+    p[0] = p[0] + randomNumberX;
+    p[1] = p[1] + randomNumberY;
+    return p;
+  }
+
+  function newRandomPoints() {
+    var randomNumberX = Math.random() > 0.5 ? -1 : 1;
+    randomNumberX = (randomNumberX * (Math.random() * (findMacDistance() / 2 - 10))).toFixed(1);
+    randomNumberX = parseFloat(randomNumberX);
+    var randomNumberY = Math.random() > 0.5 ? -1 : 1;
+    randomNumberY = (randomNumberY * (Math.random() * 10)).toFixed(1);
+    randomNumberY = parseFloat(randomNumberY);
+    var w = testSettings.W[testSettings.IDSet[eachClickData.Round - 1]]; //取得寬度
+    var d = testSettings.D[testSettings.IDSet[eachClickData.Round - 1]]; //取得距離
+    var angle = testSettings.angales[testSettings.angaleSet[eachClickData.Round - 1]];
+    //console.log(w, d, angle, randomNumberX, randomNumberY, eachClickData.round-1);
+    var startPosition = getStartPosition(d, angle, randomNumberX, randomNumberY);
+    var targetPosition = getTagetPosition(d, angle, randomNumberX, randomNumberY);
+    $(".startPoint").css({
+      "top": startPosition[1] + "px",
+      "left": startPosition[0] + "px",
+      opacity: "1"
+    });
+    $("#start-text").css({
+      "top": startPosition[1] + "px",
+      "left": startPosition[0] + "px",
+      opacity: "1"
+    });
+    $(".targetPoint").css({
+      "top": targetPosition[1] + "px",
+      "left": targetPosition[0] + "px",
+      "width": w * testSettings.rang + "px",
+      "height": w * testSettings.rang + "px",
+      opacity: "0.3"
+    });
+    $("#target-text").css({
+      "top": (targetPosition[1] - ((w / 2) * testSettings.rang)) + "px",
+      "left": targetPosition[0] + "px",
+      opacity: "0.3"
+    });
+    eachClickData.StartPointPosition.x = startPosition[0]; //紀錄起始點x
+    eachClickData.StartPointPosition.y = startPosition[1]; //紀錄起始點y
+    eachClickData.TargetPointPosition.x = targetPosition[0];
+    eachClickData.TargetPointPosition.y = targetPosition[1];
+    $(".targetPoint").show();
+    $(".startPoint").show();
+  }
+
+  function newRound() {
+    eachClickData.ClickOn = "";
+    eachClickData.ClickTime = "";
+    eachClickData.Success = false;
+    eachClickData.IsFailTrail = false;
+    eachClickData.StartClicked = false;
+    eachClickData.StartTime = "";
+    eachClickData.EndTime = "";
+    eachClickData.Duration = 0;
+    eachClickData.ID = testSettings.ID[testSettings.IDSet[eachClickData.Round - 1]];
+    eachClickData.TargetPointWidth = testSettings.W[testSettings.IDSet[eachClickData.Round - 1]];
+    eachClickData.Distance = testSettings.D[testSettings.IDSet[eachClickData.Round - 1]];
+    eachClickData.Angle = testSettings.angales[testSettings.angaleSet[eachClickData.Round - 1]];
+    newRandomPoints();
+  }
+
+  function setting() {
+    //eachClickData.pid = subject.Project.id;
+    //eachClickData.subjectName = subject.Name;
+    //eachClickData.model = subject.ProjectDevice.id;
+
+    testSettings.rang = device.Rang;
+    testSettings.total1Rounds = project.FittsPracticeRound;
+    testSettings.ID = project.FittsID;
+    testSettings.W = project.FittsW;
+    testSettings.D = project.FittsD;
+    var howManyEach = testSettings.total1Rounds / 4;
+    //把該出現的ID平均放置
+    //testSettings.total1Rounds = 10;
+    for (var i = 0; i < testSettings.total1Rounds; i++) {
+      var idex = i % testSettings.ID.length;
+      testSettings.IDSet.push(idex);
+    };
+    for (var i = 0; i < testSettings.total1Rounds / 2; i++) {
+      var adex = i % (testSettings.angales.length / 2);
+      angleTable[0].push(adex);
+      angleTable[1].push(adex + 3);
+    };
+    //隨便排序
+    testSettings.IDSet.sort(function() {
+      return Math.random() > 0.5 ? -1 : 1;
+    });
+    angleTable[0].sort(function() {
+      return Math.random() > 0.5 ? -1 : 1;
+    });
+    angleTable[1].sort(function() {
+      return Math.random() > 0.5 ? -1 : 1;
+    });
+    var lIndex = 0;
+    for (var i = 0; i < angleTable[0].length; i++) {
+      testSettings.angaleSet.push(angleTable[0][i]);
+      testSettings.angaleSet.push(angleTable[1][i]);
+    };
+    newRound();
+  }
+
+  var disConned = false;
+  var socket;
+
+  function ini() {
+    $("#finish-btn").attr("href", "./Test-Fitts-Home?donePrac=true&subjectId="+subject);
+    $.fpLoaded();
+    startTestingTime = moment().format("x");
+    win_w = $(document).width(); // in mm
+    win_h = $(document).height(); // in mm
+    onlistenClicks();
+    setting();
+    socket = io.connect();
+    socket.on('connect', function() {
+      //console.log('check 2', socket.connected);
+    });
+    socket.on('disconnect', function() {
+      disConned = true;
+      lostConnectionPopup("Lost connection...Try to reconnect...", function() {}, false);
+    });
+    $("#puase-test").click(function() {
+      event.stopPropagation();
+      lostConnectionStarTime = moment().format("x");
+      lostConnectionPopup("Pausing... Click Ok to Continue.", function() {
+        lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+      }, true);
+    });
+  }
+</script>
+<div id="testWrapper">
+  <div class="startPoint" style="display: none;"></div>
+  <div class="targetPoint" style="display: none;"></div>
+  <span id="start-text">Start</span>
+  <span id="target-text">Target</span>
+</div>
+<div class="finish-test-popup-container">
+  <div class="finish-wrapper">
+    <div class="finish-content">
+      The task is done, please click the Finish button
+    </div>
+    <a id="finish-btn" class="finish-btn btn btn-success" href="">Finish</a>
+  </div>
+</div>

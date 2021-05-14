@@ -1,0 +1,1004 @@
+<style type="text/css">
+  .project-container {
+    border: none;
+    background: transparent;
+  }
+
+  .card-group-container {
+    padding: 15px 10px;
+    background: #FFF;
+    margin-bottom: 5px;
+    border: 1px solid rgba(0, 0, 0, .0625);
+  }
+
+  #no-data-alert {
+    text-align: -webkit-center;
+    color: #FFF;
+    font-size: 20px;
+    background: firebrick;
+    border: 0px;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: none;
+  }
+
+  #curve_chart {
+    width: 60%;
+    height: 300px;
+    display: inline-block;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+  }
+
+  #chart-container {
+    height: 350px;
+    margin-top: 30px;
+  }
+
+  .fitts-line-container {
+    display: none;
+  }
+
+  .fitts-line-container.active {
+    display: block;
+  }
+
+  #chart-table {
+    width: 39%;
+    height: 500px;
+    display: inline-block;
+    padding: 10px;
+    background: #FFF;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+  }
+
+  #subjects-table-container {
+    width: 99%;
+    display: inline-block;
+    padding: 10px;
+    background: #FFF;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table>thead {
+    background: grey !important;
+    border-color: #FFF;
+    color: #FFF;
+  }
+
+  .table>tbody * {
+    border-color: #FFF;
+    background: #EEE;
+  }
+
+  .table-title {
+    display: table;
+    padding: 10px 5px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #333;
+  }
+
+  .back-links-container {
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .back-link {
+    border: 1px solid #337ab7;
+    border-radius: 3px;
+    padding: 5px;
+  }
+
+  .project-info-container {
+    background: #FFF;
+    display: block;
+    margin: 10px 0px;
+    width: 99%;
+    padding: 15px 15px;
+    border: 0px;
+    border-radius: 3px;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    color: #999;
+  }
+
+  #project-name {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+  }
+
+  #owner {
+    font-weight: bold;
+    color: #333;
+  }
+
+  #need-reload-alert {
+    background: #F90;
+    padding: 10px;
+    width: 99%;
+    border-radius: 3px;
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    color: #FFF;
+    text-align: -webkit-center;
+  }
+
+  .remove-tr td {
+    background: yellow;
+  }
+
+  .remove-tr a {
+    margin-left: 10px;
+    background: orange;
+    text-decoration: none;
+    padding: 4px 9px;
+    border-radius: 3px;
+    color: #FFF;
+  }
+
+  .remove-tr button {
+    color: #999;
+  }
+
+  .remove-subject-check {
+    margin-right: 10px;
+  }
+
+  .table-wrapper::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+  .result-table-container {
+    display: inline-block;
+    float: left;
+    width: 50%;
+    padding: 30px 30px;
+  }
+
+  .result-table-container::after {
+    content: " ";
+    display: block;
+    height: 0;
+    clear: both;
+  }
+
+  .result-table {
+    margin: 20px 0px;
+    width: 100%;
+  }
+
+  .table-label {
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 50px;
+  }
+
+
+  .result-table thead {}
+
+  .result-table thead td {
+    font-weight: 900;
+    color: #AAA;
+    font-size: 14px;
+    line-height: 25px;
+    letter-spacing: 1px;
+    padding-bottom: 5px;
+  }
+
+  .result-table tbody {}
+
+  .result-table tbody td {
+    border-top: 1px solid #DDD;
+    border-bottom: 1px solid #DDD;
+    line-height: 36px;
+  }
+
+  .data-type-btn {
+    /* background: none;
+    border: 1px solid #AAA;
+    border-radius: 0px;
+    padding: 5px 20px;
+    font-weight: 500;
+    color: #AAA; */
+  }
+
+  .data-type-btn.active {
+    /* border-color: #337ab7;
+    color: #337ab7; */
+  }
+
+  #chart-filter-container {
+    text-align: center;
+    padding: 35px;
+  }
+
+  #chart-filter-container .chart-type-btn {
+    /* background: none;
+    border: 1px solid #AAA;
+    border-radius: 0px;
+    padding: 5px 20px;
+    font-weight: 500;
+    color: #AAA; */
+  }
+
+  #chart-filter-container .chart-type-btn.active {
+    /* border-color: #337ab7;
+    color: #337ab7; */
+  }
+
+  .tip-container {
+    display: inline-block;
+    overflow: hidden;
+  }
+
+  .tip-container .tip-icon {
+    padding: 0px 5px;
+    border: 1.5px solid #C70;
+    border-radius: 50px;
+    line-height: 19px;
+  }
+
+  .tip-icon:hover+.tip-content {
+    opacity: 1;
+    z-index: 999;
+  }
+
+  .tip-container .fa {
+    color: #C70;
+  }
+
+  .tip-container .tip-content {
+    position: absolute;
+    background: #FFF;
+    border: 1px solid #C70;
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+    transition-delay: 0s;
+    opacity: 0;
+    z-index: -1;
+    padding: 12px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    width: 360px;
+    line-height: 18px;
+    transform: translate(-49%, 5%);
+  }
+
+  .tip-content img {
+    width: 100%;
+  }
+</style>
+<!--<script type="text/javascript" src="https://www.google.com/jsapi?autoload={
+            'modules':[{
+              'name':'visualization',
+              'version':'1.1',
+              'packages':['line']
+            }]
+          }">
+</script>-->
+<!-- <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> -->
+<script type="text/javascript">
+  //google.charts.load('current', {'packages':['line']});
+  //google.setOnLoadCallback(drawChart);
+  // google.charts.load("current", {
+  //     packages: ["corechart"]
+  // });
+
+
+
+  function replaceModelName(name) {
+    var found = name;
+    for (var i = 0; i < projectModels.length; i++) {
+      if (projectModels[i] == name) {
+        found = projectModelsFullName[i];
+        break;
+      }
+    }
+    return found;
+  }
+  var projectIndex;
+  var test1Rounds;
+  var projectIDs = [];
+  var projectModels = [];
+  var projectModelsFullName = [];
+  var durationResultData = [];
+  var errorRateData = [];
+  var modelTotalRounds = [];
+  var mergedIDlist = [];
+  var ottResult = [];
+  var isPracticeData = false;
+
+
+  function showCorrectDurationResult(results) {
+    $("#ctt-table").html("");
+    var ottThead = $("<thead />").appendTo("#ctt-table");
+    $("<tr><td>Model</td><td align='center' colspan='" + mergedIDlist.length + "'>Travel Time (ms)</td></tr>").appendTo(ottThead);
+    var idRowHead = "<tr><td></td>";
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      idRowHead = idRowHead + "<td align='center'>" + mergedIDlist[i] + "</td>";
+    };
+    idRowHead = idRowHead + "</tr>";
+    $(idRowHead).appendTo(ottThead);
+    var ottTbody = $("<tbody />").appendTo("#ctt-table");
+    for (var i = 0; i < project.Devices.length; i++) {
+      var tr = $("<tr />").appendTo(ottTbody);
+      $("<td>" + project.Devices[i].DeviceName + "</td>").appendTo(tr);
+      for (var j = 0; j < mergedIDlist.length; j++) {
+        var valueTd = $("<td />", {
+          text: "-",
+          align: 'center'
+        }).appendTo(tr);
+        for (var d = 0; d < results.length; d++) {
+          if (project.Devices[i].id == results[d].ProjectDevice && results[d].ID == mergedIDlist[j]) {
+            //$(valueTd).html(results[d].Duration);
+            $(valueTd).html(results[d].Duration + "<div class='small m-0'>( " +results[d].TotalDuration + ' /<br/> '+results[d].Counter+ " )</div>");
+          }
+        }
+      };
+    };
+  };
+
+  function showDurationResult(results) {
+    $("#ott-table").html("");
+    var ottThead = $("<thead />").appendTo("#ott-table");
+    $("<tr><td>Model</td><td align='center' colspan='" + mergedIDlist.length + "'>Travel Time (ms)</td></tr>").appendTo(ottThead);
+    var idRowHead = "<tr><td></td>";
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      idRowHead = idRowHead + "<td align='center'>" + mergedIDlist[i] + "</td>";
+    }
+    idRowHead = idRowHead + "</tr>";
+    $(idRowHead).appendTo(ottThead);
+    var ottTbody = $("<tbody />").appendTo("#ott-table");
+    for (var i = 0; i < project.Devices.length; i++) {
+      var tr = $("<tr />").appendTo(ottTbody);
+      $("<td>" + project.Devices[i].DeviceName + "</td>").appendTo(tr);
+      for (var j = 0; j < mergedIDlist.length; j++) {
+        var valueTd = $("<td />", {
+          text: "-",
+          align: 'center'
+        }).appendTo(tr);
+        for (var d = 0; d < results.length; d++) {
+          if (project.Devices[i].id == results[d].ProjectDevice && results[d].ID == mergedIDlist[j]) {
+            //$(valueTd).html(results[d].Duration);
+            $(valueTd).html(results[d].Duration + "<div class='small m-0'>( " +results[d].TotalDuration + ' /<br/> '+results[d].Counter+ " )</div>");
+          }
+        }
+      };
+    }
+  } 
+  var ottData, cttData;
+
+  function getDurationResult() {
+    //$("#results-table-wrapper").html("");
+    $("#results-table-wrapper").elementLoading();
+    $(".fitts-line-container").elementLoading();
+    $.get("/fittsDurationResults", {
+      project: project.id,
+      isPractice: isPracticeData
+    }).done(function (results1) {
+      showDurationResult(results1);
+      ottData = results1;
+      drawDurationChart(ottData);
+      $.get("/fittsDurationResults", {
+        project: project.id,
+        isPractice: isPracticeData,
+        isFailTrail: false
+      }).done(function (results2) {
+        showCorrectDurationResult(results2);
+        cttData = results2;
+        $("#results-table-wrapper").elementLoaded();
+        $(".fitts-line-container").elementLoaded();
+      });
+    });
+  }
+
+  function showErrorTimes(results) {
+    $("#et-table").html("");
+    var ottThead = $("<thead />").appendTo("#et-table");
+    $("<tr><td>Model</td><td align='center' colspan='" + mergedIDlist.length + "'>Percentage</td></tr>").appendTo(ottThead);
+    var idRowHead = "<tr><td></td>";
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      idRowHead = idRowHead + "<td align='center'>" + mergedIDlist[i] + "</td>";
+    }
+    idRowHead = idRowHead + "</tr>";
+    $(idRowHead).appendTo(ottThead);
+    var ottTbody = $("<tbody />").appendTo("#et-table");
+    for (var i = 0; i < project.Devices.length; i++) {
+      var tr = $("<tr />").appendTo(ottTbody);
+      $("<td>" + project.Devices[i].DeviceName + "</td>").appendTo(tr);
+      for (var j = 0; j < mergedIDlist.length; j++) {
+        var valueTd = $("<td />", {
+          text: "-",
+          align: 'center'
+        }).appendTo(tr);
+        for (var d = 0; d < results.length; d++) {
+          if (project.Devices[i].id == results[d].ProjectDevice && results[d].ID == mergedIDlist[j]) {
+            //$(valueTd).html(results[d].Counter);
+            $(valueTd).html(results[d].ErrorResult + "<div class='small m-0'>( " +results[d].cal+ " )</div>");
+          }
+        }
+      };
+    }
+  }
+
+  function showErrorRate(results) {
+    $("#er-table").html("");
+    var ottThead = $("<thead />").appendTo("#er-table");
+    $("<tr><td>Model</td><td align='center' colspan='" + mergedIDlist.length + "'>Percentage</td></tr>").appendTo(ottThead);
+    var idRowHead = "<tr><td></td>";
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      idRowHead = idRowHead + "<td align='center'>" + mergedIDlist[i] + "</td>";
+    }
+    idRowHead = idRowHead + "</tr>";
+    $(idRowHead).appendTo(ottThead);
+    var ottTbody = $("<tbody />").appendTo("#er-table");
+    for (var i = 0; i < project.Devices.length; i++) {
+      var tr = $("<tr />").appendTo(ottTbody);
+      $("<td>" + project.Devices[i].DeviceName + "</td>").appendTo(tr);
+      for (var j = 0; j < mergedIDlist.length; j++) {
+        var valueTd = $("<td />", {
+          text: "-",
+          align: 'center'
+        }).appendTo(tr);
+        for (var d = 0; d < results.length; d++) {
+          if (project.Devices[i].id == results[d].ProjectDevice && results[d].ID == mergedIDlist[j]) {
+            $(valueTd).html((results[d].ErrorResult * 100).toFixed(2) + "%"+ "<div class='small m-0'>( " +results[d].cal+ " )</div>");
+          }
+        }
+      };
+    }
+  }
+  var erData, etData;
+
+  function getErrorResult() {
+    //Rate
+    $.get("/fittsErrorResults", {
+      project: project.id,
+      isPractice: isPracticeData,
+      clickOn : 'Target'
+    }).done(function (results1) {
+      //console.log(results);
+      for (var i = 0; i < results1.data.length; i++) {
+        for (var j = 0; j < results1.dataSum.length; j++) {
+          if (results1.dataSum[j].ProjectDevice == results1.data[i].ProjectDevice && results1.dataSum[j].ID == results1.data[i].ID) {
+            results1.data[i].ErrorResult = parseFloat((results1.data[i].Counter / results1.dataSum[j].Counter).toFixed(4));
+            results1.data[i].cal = results1.data[i].Counter + ' / '+ results1.dataSum[j].Counter;
+          }
+        }
+      }
+      console.log(results1);
+      showErrorRate(results1.data);
+      erData = results1.data;
+      //Times
+      $.get("/fittsErrorResults", {
+        project: project.id,
+        isPractice: isPracticeData,
+        clickOn : 'Else'
+      }).done(function (results2) {
+        //console.log("Times", results);
+        // for (var i = 0; i < results2.data.length; i++) {
+        //   results2.data[i].ErrorResult = parseFloat((results2.data[i].Counter / results2.dataSum[j].Counter).toFixed(2));
+        // }
+        for (var i = 0; i < results2.data.length; i++) {
+          for (var j = 0; j < results2.dataSum.length; j++) {
+            if (results2.dataSum[j].ProjectDevice == results2.data[i].ProjectDevice && results2.dataSum[j].ID == results2.data[i].ID) {
+              results2.data[i].ErrorResult = parseFloat((results2.data[i].Counter / results2.dataSum[j].Counter).toFixed(4));
+              results2.data[i].cal = results2.data[i].Counter + ' / ' + results2.dataSum[j].Counter;
+            }
+          }
+        }
+        console.log(results2);
+        showErrorTimes(results2.data);
+        etData = results2.data;
+      });
+    });
+  }
+
+  function showSubjectDurationResult(results, removedResults) {
+    $("#alive-subject-table tbody").html("");
+    for (var i = 0; i < project.Subject.length; i++) {
+      for (var d = 0; d < project.Devices.length; d++) {
+        var tr = $("<tr />").appendTo("#alive-subject-table tbody");
+        var nameTd = $("<td />").appendTo(tr);
+        $("<input />", {
+          type: "checkbox",
+          class: "remove-subject-check",
+          "data-subject": project.Subject[i].id,
+          "data-device": project.Devices[d].id
+        }).appendTo(nameTd).click(function () {
+          if ($(this).is(":checked")) {
+            var value = parseInt($("#remove-subject-btn").attr("data-value"));
+            value += 1;
+            $("#remove-subject-btn").attr("data-value", value);
+            $("#remove-subject-btn span").html(value);
+          } else {
+            var value = parseInt($("#remove-subject-btn").attr("data-value"));
+            value -= 1;
+            $("#remove-subject-btn").attr("data-value", value);
+            $("#remove-subject-btn span").html(value);
+          }
+        });
+        $("<span>" + project.Subject[i].Name + "</span>").appendTo(nameTd);
+        $("<td>" + project.Devices[d].DeviceName + "</td>").appendTo(tr);
+        var noDataCount = 0;
+        for (var m = 0; m < mergedIDlist.length; m++) {
+          var hasValue = false;
+          for (var j = 0; j < results.length; j++) {
+            if (project.Subject[i].id == results[j].Subject &&
+              project.Devices[d].id == results[j].ProjectDevice &&
+              results[j].ID == mergedIDlist[m]) {
+              $("<td align='center'>" + results[j].Duration + "</td>").appendTo(tr);
+              hasValue = true;
+            }
+          };
+          if (!hasValue) {
+            $("<td align='center'>-</td>").appendTo(tr);
+            noDataCount += 1;
+          }
+        };
+        if (noDataCount == mergedIDlist.length) {
+          $(tr).hide();
+        }
+      }
+    };
+    $("#removed-subject-table tbody").html("");
+    for (var i = 0; i < project.Subject.length; i++) {
+      for (var d = 0; d < project.Devices.length; d++) {
+        var tr = $("<tr />").appendTo("#removed-subject-table tbody");
+        var nameTd = $("<td />").appendTo(tr);
+        $("<input />", {
+          type: "checkbox",
+          class: "recover-subject-check",
+          "data-subject": project.Subject[i].id,
+          "data-device": project.Devices[d].id
+        }).appendTo(nameTd).click(function () {
+          if ($(this).is(":checked")) {
+            var value = parseInt($("#recover-subject-btn").attr("data-value"));
+            value += 1;
+            $("#recover-subject-btn").attr("data-value", value);
+            $("#recover-subject-btn span").html(value);
+          } else {
+            var value = parseInt($("#recover-subject-btn").attr("data-value"));
+            value -= 1;
+            $("#recover-subject-btn").attr("data-value", value);
+            $("#recover-subject-btn span").html(value);
+          }
+        });
+        $("<span>" + project.Subject[i].Name + "</span>").appendTo(nameTd);
+        $("<td>" + project.Devices[d].DeviceName + "</td>").appendTo(tr);
+        var noDataCount = 0;
+        for (var m = 0; m < mergedIDlist.length; m++) {
+          var hasValue = false;
+          for (var j = 0; j < removedResults.length; j++) {
+            if (project.Subject[i].id == removedResults[j].Subject &&
+              project.Devices[d].id == removedResults[j].ProjectDevice &&
+              removedResults[j].ID == mergedIDlist[m]) {
+              $("<td align='center'>" + removedResults[j].Duration + "</td>").appendTo(tr);
+              hasValue = true;
+            }
+          };
+          if (!hasValue) {
+            $("<td align='center'>-</td>").appendTo(tr);
+            noDataCount += 1;
+          }
+        };
+        if (noDataCount == mergedIDlist.length) {
+          $(tr).hide();
+        }
+      }
+    };
+  }
+
+  function getSubjectDurationResult() {
+    $("#subjects-table-wrapper").elementLoading();
+    $.get("/fittsDurationSubjectsResults", {
+      project: project.id,
+      isPractice: isPracticeData,
+      alive: true
+    }).done(function (results) {
+      $.get("/fittsDurationSubjectsResults", {
+        project: project.id,
+        isPractice: isPracticeData,
+        alive: false
+      }).done(function (results2) {
+        //console.log(results);
+        showSubjectDurationResult(results, results2);
+        $("#subjects-table-wrapper").elementLoaded();
+      });
+    });
+  };
+  var totalUpdate = 0,
+    totalUpdated = 0;
+
+  function updateSubjectData(s, d, alive) {
+    $.post("./aliveRecords", {
+      project: project.id,
+      s: s,
+      d: d,
+      alive: alive,
+      isPractice: isPracticeData,
+    }).done(function () {
+      totalUpdated += 1;
+      if (totalUpdated == totalUpdate) {
+        getDurationResult();
+        getErrorResult();
+        getSubjectDurationResult();
+        $("#subjects-table-wrapper").elementLoaded();
+      }
+    });
+  }
+
+  function drawErrorChart(results, useCounter) {
+    $("#fitts-line-container").html("");
+    var chartData = [];
+    var yValue = [];
+    for (var i = 0; i < project.Devices.length; i++) {
+      yValue.push(project.Devices[i].DeviceName);
+    };
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      var obj = {
+        ID: mergedIDlist[i] + ""
+      }
+      for (var j = 0; j < results.length; j++) {
+        if (mergedIDlist[i] == results[j].ID) {
+          obj[results[j].DeviceObj.DeviceName] = (useCounter) ? (results[j].Counter) : (Math.round(results[j].ErrorResult * 100) + "%");
+        }
+      }
+      chartData.push(obj);
+    };
+    //console.log(chartData);
+    var chart = new Morris.Bar({
+      // ID of the element in which to draw the chart.
+      element: 'fitts-line-container',
+      data: chartData,
+      // The name of the data record attribute that contains x-values.
+      xkey: 'ID',
+      // A list of names of data record attributes that contain y-values.
+      ykeys: yValue,
+      // ymax : (useCounter) ? ('auto') : (100),
+      // ymin : (useCounter) ? (1) : (1),
+      goals: (useCounter) ? ([0, 12]) : ([0, 100]),
+      // Labels for the ykeys -- will be displayed when you hover over the
+      // chart.
+      labels: yValue,
+      postUnits: (useCounter) ? ("") : ("%"),
+      // lineColors: ["#dbb74c", "#efe0b2", "#5491bf", "#aac8df"],
+      //xLabels : 'ID',
+      parseTime: false,
+      xLabelFormat: function (x) {
+        return "ID " + x.src.ID;
+      },
+      // hoverCallback: function(index, options, content, row) {
+      //   console.log(row);
+      //   return "sin(" + row.x + ") = " + row.y;
+      //
+      // }
+    });
+  }
+
+  function drawDurationChart(results) {
+    $("#fitts-line-container").html("");
+    var chartData = [];
+    var yValue = [];
+    for (var i = 0; i < project.Devices.length; i++) {
+      yValue.push(project.Devices[i].DeviceName);
+    };
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      var obj = {
+        ID: mergedIDlist[i] + ""
+      }
+      for (var j = 0; j < results.length; j++) {
+        if (mergedIDlist[i] == results[j].ID) {
+          obj[results[j].DeviceObj.DeviceName] = results[j].Duration;
+        }
+      }
+      chartData.push(obj);
+    };
+    //console.log(chartData);
+    var chart = new Morris.Line({
+      // ID of the element in which to draw the chart.
+      element: 'fitts-line-container',
+      data: chartData,
+      // The name of the data record attribute that contains x-values.
+      xkey: 'ID',
+      // A list of names of data record attributes that contain y-values.
+      ykeys: yValue,
+      // Labels for the ykeys -- will be displayed when you hover over the
+      // chart.
+      labels: yValue,
+      goals: [0, 3000],
+      // lineColors: ["#dbb74c", "#efe0b2", "#5491bf", "#aac8df"],
+      //xLabels : 'ID',
+      parseTime: false,
+      xLabelFormat: function (x) {
+        return "ID " + x.src.ID;
+      }
+    });
+  }
+
+  function ini() {
+    //getData();
+    //getProject();
+    //getRawData();
+    $(".project-nav-link[data-nav='fitts-result']").addClass("active");
+    for (var i = 0; i < project.FittsID.length; i++) {
+      var found = false;
+      for (var j = 0; j < mergedIDlist.length; j++) {
+        if (project.FittsID[i] == mergedIDlist[j]) {
+          found = true;
+          break;
+        }
+      };
+      if (!found) {
+        mergedIDlist.push(project.FittsID[i]);
+      }
+    };
+    mergedIDlist.sort(function (a, b) {
+      return a - b
+    });
+    getDurationResult();
+    getErrorResult();
+    getSubjectDurationResult();
+    $("#subjects-table-wrapper thead").html("");
+    $("<tr><td>Participant</td><td>Model</td><td align='center' colspan='" + mergedIDlist.length + "'>Cursor movement travel time</td></tr>").appendTo("#subjects-table-wrapper thead");
+    var subjectTableIdRow = $("<tr />").appendTo("#subjects-table-wrapper thead");
+    $("<td></td><td></td>").appendTo(subjectTableIdRow);
+    for (var i = 0; i < mergedIDlist.length; i++) {
+      $("<td align='center'>" + mergedIDlist[i] + "</td>").appendTo(subjectTableIdRow);
+    };
+    $("#remove-subject-btn").click(function () {
+      $("#subjects-table-wrapper").elementLoading();
+      totalUpdate = $(".remove-subject-check:checked").length;
+      totalUpdated = 0;
+      $(".remove-subject-check:checked").each(function () {
+        updateSubjectData($(this).attr("data-subject"), $(this).attr("data-device"), false);
+      });
+      $(this).attr("data-value", 0);
+      $(this).find("span").html(0);
+    });
+    $("#recover-subject-btn").click(function () {
+      $("#subjects-table-wrapper").elementLoading();
+      totalUpdate = $(".recover-subject-check:checked").length;
+      totalUpdated = 0;
+      $(".recover-subject-check:checked").each(function () {
+        updateSubjectData($(this).attr("data-subject"), $(this).attr("data-device"), true);
+      });
+      $(this).attr("data-value", 0);
+      $(this).find("span").html(0);
+    });
+    $(".data-type-btn").click(function () {
+      if (!$(this).hasClass("active")) {
+        $(".data-type-btn.active").removeClass("active");
+        isPracticeData = $.parseJSON($(this).attr("data-value"));
+        getDurationResult();
+        getErrorResult();
+        getSubjectDurationResult();
+        $(this).addClass("active");
+      }
+
+    });
+    $("#chart-filter-container .chart-type-btn").click(function () {
+      if (!$(this).hasClass("active")) {
+        $("#chart-filter-container .chart-type-btn.active").removeClass("active");
+        var chartId = $(this).attr("data-chart");
+        $(this).addClass("active");
+        if (chartId == "ott") {
+          drawDurationChart(ottData);
+        } else if (chartId == "ctt") {
+          drawDurationChart(cttData);
+        } else if (chartId == "er") {
+          drawErrorChart(erData, false);
+        } else if (chartId == "et") {
+          drawErrorChart(etData, true);
+        }
+      }
+    });
+  }
+</script>
+<div class="project-container">
+  <div class="card-group-container">
+    <button class="data-type-btn btn btn-outline-success active" data-value=false>Formal Test</button>
+    <button class="data-type-btn btn btn-outline-success" data-value=true>Practice Test</button>
+  </div>
+  <div class="card-group-container">
+    <div id="chart-container">
+      <div id="fitts-line-container" style="height:350px; width:80%; margin: 0px auto;"></div>
+      <!-- <div id="ctt-line-container" class="fitts-line-container" style="height:500px; wigth:100%;"></div>
+    <div id="er-line-container" class="fitts-line-container"></div>
+    <div id="et-line-container" class="fitts-line-container"></div> -->
+    </div>
+    <div id="chart-filter-container">
+      <button class="chart-type-btn btn btn-outline-info active" data-chart="ott">Overall travel time</button>
+      <button class="chart-type-btn btn btn-outline-info" data-chart="ctt">Correct travel time</button>
+      <button class="chart-type-btn btn btn-outline-info" data-chart="er">Error Rate</button>
+      <button class="chart-type-btn btn btn-outline-info" data-chart="et">Error Times</button>
+    </div>
+    <div class="table-wrapper" id="results-table-wrapper">
+      <div class="result-table-container">
+        <div class="table-label">
+          Overall travel time
+          <div class="tip-container">
+            <div class="tip-icon">
+              <i class="fa fa-question" aria-hidden="true"></i>
+            </div>
+            <div class="tip-content">
+              <p>This result is cauculated the average travel times while cursor move from start to target. (this will
+                included the correct and error trails)
+              </p>
+              <img src="./images/tttf.png" alt="">
+            </div>
+          </div>
+        </div>
+        <table class="result-table" id="ott-table"></table>
+      </div>
+      <div class="result-table-container">
+        <div class="table-label">
+          Correct travel time
+          <div class="tip-container">
+            <div class="tip-icon">
+              <i class="fa fa-question" aria-hidden="true"></i>
+            </div>
+            <div class="tip-content">
+              <p>This result is cauculated the average travel times while cursor move from start to target. (this will
+                be only cauculated the correct trails)
+              </p>
+              <img src="./images/cttf.png" alt="">
+            </div>
+          </div>
+        </div>
+        <table class="result-table" id="ctt-table"></table>
+      </div>
+      <div class="result-table-container">
+        <div class="table-label">
+          Error Rate
+          <div class="tip-container">
+            <div class="tip-icon">
+              <i class="fa fa-question" aria-hidden="true"></i>
+            </div>
+            <div class="tip-content">
+              <p>this result is cauculated the average error number of times during all trails.
+              </p>
+              <img src="./images/erf.png" alt="">
+            </div>
+          </div>
+        </div>
+        <table class="result-table" id="er-table"></table>
+      </div>
+      <div class="result-table-container">
+        <div class="table-label">
+          Error Times
+          <div class="tip-container">
+            <div class="tip-icon">
+              <i class="fa fa-question" aria-hidden="true"></i>
+            </div>
+            <div class="tip-content">
+              <p>This result is calculated the average error number of times from start to target.
+              </p>
+              <img src="./images/etf.png" alt="">
+            </div>
+          </div>
+        </div>
+        <table class="result-table" id="et-table"></table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="table-wrapper" id="subjects-table-wrapper">
+    <div class="card-group-container">
+      <div class="table-label">The cursor movement travel time by participant and models</div>
+      <table class="result-table" id="alive-subject-table">
+        <thead>
+          <tr>
+            <td>Participant</td>
+            <td>Model</td>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="btn-container">
+        <button class="btn btn-outline-warning" id="remove-subject-btn" data-value="0">Remove ( <span>0</span>
+          )</button>
+      </div>
+    </div>
+    <div class="card-group-container">
+      <div class="table-label">The cursor movement travel time by participant and models(Removed data)</div>
+      <table class="result-table" id="removed-subject-table">
+        <thead>
+          <tr>
+
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="btn-container">
+        <button class="btn btn-outline-primary" id="recover-subject-btn" data-value="0">Recover ( <span>0</span>
+          )</button>
+      </div>
+    </div>
+  </div>
+  <!-- <div id="no-data-alert">There is no data in this project!!!</div>
+    <div id="curve_chart"></div>
+    <div id="chart-table">
+        <span class="table-title">The cursor movement travel time</span>
+        <table class="table" id="performance-table">
+            <thead>
+                <tr>
+                    <td rowspan="2" style="text-align: center; vertical-align:middle">Model</td>
+                    <td colspan="3" style="text-align: center; vertical-align:middle">Travel Time ( ms )</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <span class="table-title">Error rates</span>
+        <table class="table" id="error-table">
+            <thead>
+                <tr>
+                    <td rowspan="2" style="text-align: center; vertical-align:middle">Model</td>
+                    <td colspan="3" style="text-align: center; vertical-align:middle">Percentage</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="subjects-table-container">
+        <span class="table-title">The cursor movement travel time by subjects and models</span>
+        <table class="table" id="subjects-table">
+            <thead>
+                <tr>
+                    <td>Participants</td>
+                    <td>Model</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Remove</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <span class="table-title">Subjects and models travel time (removed)</span>
+        <table class="table" id="subjects-removed-table">
+            <thead>
+                <tr>
+                    <td>Participants</td>
+                    <td>Model</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Back to result table</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div> -->
+</div>

@@ -1,0 +1,309 @@
+<style type="text/css">
+  .project-container {
+    padding: 10px 10px;
+  }
+
+  #no-data-alert {
+    text-align: center;
+    text-align: -webkit-center;
+    text-align: -moz-center;
+    color: #FFF;
+    font-size: 20px;
+    background: firebrick;
+    border: 0px;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: none;
+  }
+
+  #subjects-table-container {}
+
+  .back-links-container {
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .back-link {
+    border: 1px solid #337ab7;
+    border-radius: 3px;
+    padding: 5px;
+  }
+
+  .project-info-container {
+    background: #FFF;
+    display: block;
+    margin: 10px 0px;
+    width: 99%;
+    padding: 15px 15px;
+    border: 0px;
+    border-radius: 3px;
+    -moz-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    -webkit-box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    box-shadow: 4px 4px 12px -2px rgba(20%, 20%, 40%, 0.5);
+    color: #999;
+  }
+
+  #project-name {
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+  }
+
+  #owner {
+    font-weight: bold;
+    color: #333;
+  }
+</style>
+<script type="text/javascript">
+  //google.setOnLoadCallback(drawChart);
+  var projectModels = [];
+  var projectModelsFullName = [];
+
+  function replaceModelName(name) {
+    var found = name;
+    for (var i = 0; i < projectModels.length; i++) {
+      if (projectModels[i] == name) {
+        found = projectModelsFullName[i];
+        break;
+      }
+    }
+    return found;
+  }
+  var ajaxErrorCounts = 0,
+    ajaxErrorModelCounts = 0;
+  var ajaxErrorTotal = 0,
+    ajaxErrorModelTotal = 0;
+
+  function showAjaxProcess() {
+    //console.log(ajaxErrorModelCounts, ajaxErrorModelTotal);
+    var p1 = ((ajaxErrorModelCounts / ajaxErrorModelTotal) * 100).toFixed(0);
+    var p2 = ((ajaxErrorCounts / ajaxErrorTotal) * 100).toFixed(0);
+    $("#byModelProcess").html(p1 + "% Loaded");
+    $("#byPartiProcess").html(p2 + "% Loaded");
+    if (p1 == "100") {
+      $("#byModelProcess").fadeOut(3000);
+    }
+    if (p2 == "100") {
+      $("#byPartiProcess").fadeOut(3000);
+    }
+    //$("#byModelProcess").html(ajaxErrorModelCounts+" / "+ajaxErrorModelTotal);
+    //$("#byPartiProcess").html(ajaxErrorCounts+" / "+ajaxErrorTotal);
+  }
+
+  function createTable(data) {
+    $('#log-table').bootstrapTable('destroy');
+    $('#log-table').bootstrapTable({
+      icons: {
+        columns: 'icon-menu',
+      },
+      columns: [{
+        field: 'Subject.Name',
+        title: 'Participants',
+        sortable: true,
+        formatter: function (value, row, index, field) {
+          return value + "-";
+        }
+      },
+      {
+        field: 'ProjectDevice.ModelName',
+        title: 'Model',
+        sortable: true,
+        formatter: function (value, row, index, field) {
+          return value + " " + row.ProjectDevice.DeviceName;
+        }
+      }, {
+        field: 'Round',
+        title: 'Trail',
+        sortable: true
+      }, {
+        field: 'ClickOn',
+        title: 'Click On',
+        sortable: true
+      },
+      {
+        field: 'IsFailTrail',
+        title: 'IsFailTrail',
+        sortable: true
+      },
+      {
+        field: 'Success',
+        title: 'Error',
+        sortable: true,
+        formatter: function (value, row, index, field) {
+          return (value) ? (false) : (true);
+        }
+      }, {
+        field: 'ID',
+        title: 'ID',
+        sortable: true
+      }, {
+        field: 'Distance',
+        title: 'Distance',
+        sortable: true
+      }, {
+        field: 'TargetPointWidth',
+        title: 'Width',
+        sortable: true
+      }, {
+        field: 'ClickTime',
+        title: 'Event Time(ms)',
+        sortable: true
+      }, {
+        field: 'Duration',
+        title: 'Duration(ms)',
+        formatter: function (value, row, index, field) {
+          return row.ClickOn === 'Target' ? (value) : (0);
+        }
+      }, {
+        field: 'ClickPosition',
+        title: 'Position',
+        formatter: function (value, row, index, field) {
+          if (row.ClickOn === "Target") {
+            return "( " + (parseFloat(row.TargetPointPosition.x)).toFixed(0) + ", " + (parseFloat(row.TargetPointPosition.y)).toFixed(0) + " )"
+          } else if (row.ClickOn === "Start") {
+            return "( " + (parseFloat(row.StartPointPosition.x)).toFixed(0) + ", " + (parseFloat(row.StartPointPosition.y)).toFixed(0) + " )"
+          } else {
+            return (!value) ? ('-') : "( " + (parseFloat(value.x)).toFixed(0) + ", " + (parseFloat(value.y)).toFixed(0) + " )"
+          }
+        }
+      }
+        // , {
+        //   field: 'StartPointPosition',
+        //   title: 'Start Point Position',
+        //   formatter: function (value, row, index, field) {
+        //     return "( " + (parseFloat(value.x)).toFixed(0) + ", " + (parseFloat(value.y)).toFixed(0) + " )"
+        //   }
+        // }, {
+        //   field: 'TargetPointPosition',
+        //   title: 'Target Point Position',
+        //   formatter: function (value, row, index, field) {
+        //     return "( " + (parseFloat(value.x)).toFixed(0) + ", " + (parseFloat(value.y)).toFixed(0) + " )";
+        //   }
+        // }
+      ],
+      data: data
+    });
+  }
+
+  function getData(IsPractice) {
+    //$("#log-table>tbody").html("");
+    $("#no-data-alert").hide();
+    $.ajax({
+      xhr: function () {
+        var xhr = new window.XMLHttpRequest();
+        //Upload progress
+        xhr.upload.addEventListener("progress", function (evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = (evt.loaded / evt.total) * 100;
+            $("#loading-percentage").html("Preparing data...");
+          }
+        }, false);
+        //Download progress WE ONLY HAVE DOWNLOAD
+        xhr.addEventListener("progress", function (evt) {
+          if (evt.lengthComputable) {
+            var percentComplete = (evt.loaded / evt.total) * 100;
+            //console.log(percentComplete);
+            //$("#loading-percentage").html(percentComplete.toFixed(0) + "% Loaded");
+            $("#loading-percentage").attr("style", "width: " + percentComplete.toFixed(0) + "%");
+            $("#loading-percentage").attr("aria-valuenow", percentComplete.toFixed(0));
+          }
+        }, false);
+        return xhr;
+      },
+      type: 'GET',
+      url: "./fittsLogData",
+      data: {
+        project: project.id,
+        IsPractice: IsPractice
+      },
+      success: function (data) {
+        $("#loading-percentage").html("100% Loaded");
+        if (data.error) {
+          alert("System error : " + data.error);
+        } else if (data.length == 0) {
+          $("#no-data-alert").show();
+        } else {
+          createTable(data);
+          // $.each(data, function(index, log) {
+          //   var isError = (log.Success) ? (false) : (true);
+          //   $("<tr>" +
+          //     "<td>" + log.Subject.Name + "</td>" +
+          //     "<td>" + log.ProjectDevice.ModelName + " " + log.ProjectDevice.DeviceName + "</td>" +
+          //     "<td>" + log.Round + "</td>" +
+          //     "<td>" + log.ClickOn + "</td>" +
+          //     "<td>" + isError + "</td>" +
+          //     "<td>" + log.ID + "</td>" +
+          //     "<td>" + log.Distance + "</td>" +
+          //     "<td>" + log.TargetPointWidth + "</td>" +
+          //     "<td>" + log.ClickTime + "</td>" +
+          //     "<td>( " + (parseFloat(log.StartPointPosition.x)).toFixed(0) + ", " + (parseFloat(log.StartPointPosition.y)).toFixed(0) + " )</td>" +
+          //     "<td>( " + (parseFloat(log.TargetPointPosition.x)).toFixed(0) + ", " + (parseFloat(log.TargetPointPosition.y)).toFixed(0) + " )</td>" +
+          //     "</tr>").appendTo("#log-table>tbody");
+          // });
+          $.fpLoaded();
+        }
+      }
+    });
+  }
+
+  function ini() {
+    $(".project-nav-link[data-nav='fitts-raw']").addClass("active");
+    getData(false);
+    $("#copyLogTable").click(function (e) {
+      e.preventDefault();
+      selectElementContents($(this).attr("data-source"));
+      alert("Data copied!");
+    });
+    $("#show-formal-btn").click(function () {
+      if (!$(this).hasClass("active")) {
+        $("#show-practice-btn").removeClass("active");
+        $(this).addClass("active")
+        getData(false);
+      }
+    });
+    $("#show-practice-btn").click(function () {
+      if (!$(this).hasClass("active")) {
+        $("#show-formal-btn").removeClass("active");
+        $(this).addClass("active")
+        getData(true);
+      }
+    });
+  }
+</script>
+<div class="project-container">
+  <div class="tab-btn-container">
+    <button class="btn btn-outline-success active" id="show-formal-btn">Formal Data</button>
+    <button class="btn btn-outline-success" id="show-practice-btn">Practice Data</button>
+    <button class="icon-docs btn btn-icon btn-outline-primary" data-source="log-table" id="copyLogTable">Copy Log
+      Data</button>
+  </div>
+  <div id="no-data-alert">There is no data in this project!!!</div>
+  <div id="subjects-table-container">
+    <!-- <span id="loading-percentage"></span> -->
+    <div class="progress">
+      <div id="loading-percentage" class="progress-bar bg-info" role="progressbar" style="width: 0%" aria-valuenow="0"
+        aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <table class="table" id="log-table"></table>
+    <!-- <table class="table" id="log-table">
+      <thead>
+        <tr>
+          <td>Participants</td>
+          <td>Model</td>
+          <td>Trail</td>
+          <td>Click On</td>
+          <td>Error</td>
+          <td>ID</td>
+          <td>Distance</td>
+          <td>Width</td>
+          <td>Event Time(ms)</td>
+          <td>Start Point Position</td>
+          <td>Target Point Position</td>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table> -->
+  </div>
+</div>

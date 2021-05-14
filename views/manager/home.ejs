@@ -1,0 +1,761 @@
+<style type="text/css">
+	.page-container {
+		clear: both;
+		content: "";
+		display: table;
+	}
+
+	.project-filter-container {
+		padding: 15px 30px;
+		background: #FFF;
+		margin: 5px 0px;
+		border: 1px solid rgba(0, 0, 0, .0625);
+	}
+
+	.project-filter-container:after {}
+
+	.search-container {
+		float: right;
+		display: inline-block;
+	}
+
+	#search-btn {}
+
+	#cancel-search-btn {
+		line-height: 24px;
+		background: none;
+		border: none;
+		border-radius: 0px;
+		font-size: 16px;
+		color: #999;
+		transform: translateX(-120%);
+		display: inline-block;
+		overflow: hidden;
+		clear: both;
+	}
+
+	.project-view-container {
+		padding: 15px 30px;
+	}
+
+	.project-view-container .view-switcher {
+		margin: 0px;
+		margin-left: 10px;
+		font-size: 22px;
+	}
+
+	.project-view-container .view-switcher .fa {
+		color: #999;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+	}
+
+	.project-view-container .view-switcher .fa:hover {
+		color: #337ab7;
+	}
+
+	.project-view-container .view-switcher.active .fa {
+		color: #337ab7;
+	}
+
+	#new-project-link {
+		margin: 0px;
+		display: inline-block;
+		text-decoration: none;
+		padding: 15px 0px;
+	}
+
+	#new-project-link .fa {
+		color: #337ab7;
+		font-size: 20px;
+		line-height: 30px;
+		vertical-align: middle;
+	}
+
+	#new-project-link span {
+		color: #337ab7;
+		font-weight: 900;
+		line-height: 30px;
+	}
+
+	.search-container input {
+		line-height: 25px;
+	}
+
+	.filter-controller-container {
+		text-align: right;
+		color: #555;
+		font-size: 16px;
+	}
+
+	.radio-group {
+		display: inline-block;
+	}
+
+	.radio-group .radio {
+		display: inline-block;
+		margin: 5px 10px;
+	}
+
+	.radio-group label {
+		padding-left: 0px !important;
+	}
+
+	.radio-group label input {
+		position: relative !important;
+		margin: 0px !important;
+	}
+
+	.select-list-group {
+		display: inline-block;
+	}
+
+	.select-list-group select {
+		-webkit-appearance: button;
+		-webkit-border-radius: 0px;
+		-webkit-padding-end: 10px;
+		background: none;
+		border: none;
+		margin: 0;
+		overflow: hidden;
+		padding-top: 2px;
+		padding-bottom: 2px;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+
+	.icon-btn-group {
+		display: inline-block;
+		font-size: 18px;
+		color: #999;
+		float: right;
+		margin-right: 60px;
+	}
+
+	.icon-btn-group span {
+		margin: 0px 5px;
+		cursor: pointer;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		font-size: 20px;
+	}
+
+	.icon-btn-group span.active {
+		color: #007DB8;
+	}
+
+	.icon-btn-group span:hover {
+		color: #007DB8;
+	}
+
+	#manager-sort-select .manager-option {
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	#manager-sort-select .manager-option .fa {
+		color: #DDD;
+		margin: 0px 10px;
+	}
+
+	#manager-sort-select .manager-option:hover {
+		color: #147BD1;
+	}
+
+	#manager-sort-select .manager-option:hover>.fa {
+		color: #147BD1;
+	}
+
+	#manager-sort-select .manager-option.active {
+		color: #147BD1;
+	}
+
+	#manager-sort-select .manager-option.active .fa {
+		color: #147BD1;
+	}
+
+
+
+	#project-list-container {
+		min-height: 92vh;
+	}
+
+	#project-list-container:after {
+		/* clear: both;
+		content: "";
+		display: table; */
+	}
+
+	.grid-view-container {
+		display: block;
+		position: relative;
+		margin: 0px auto;
+		padding: 15px 30px;
+	}
+
+	.list-view-container {}
+
+	.project-container {}
+
+	/* .project-container:after {
+		content: "";
+		clear: both;
+		display: table;
+	} */
+
+	.grid-view {
+		display: inline-block;
+		margin: 0px;
+		position: relative;
+		margin-right: 5px;
+		margin-top: 5px;
+	}
+
+
+	/*.grid-view:after {
+	content: "";
+	clear: both;
+	display: table;
+}*/
+
+	.project-container.grid-view .project-name {}
+
+	.project-container.grid-view .project-date {}
+
+	.project-container.grid-view .subject-count {}
+
+	.project-container.grid-view .project-func-container .btn-icon {
+		border-radius: 50px;
+		width: 50px;
+		line-height: 35px;
+		margin: 0px 10px;
+	}
+
+	.project-container.grid-view .project-func-container .btn-icon:before {
+		margin-right: 0px;
+	}
+
+	.project-container.grid-view .icon-link .fa {
+		margin: 0px 10px;
+		color: #337ab7;
+	}
+
+	.project-container.grid-view .manager-name {}
+
+
+	.project-container.grid-view .project-func-container {
+		padding-top: 35px;
+	}
+
+	.list-view {
+		background: #FFF;
+		margin: 10px 0px;
+		border: 1px solid rgba(0, 0, 0, .0625);
+		border-radius: 5px;
+	}
+
+	.list-view .manager-name-col {
+
+		background: #2E393F;
+	}
+
+	.list-view .project-info-col {}
+
+	.list-view .func-col {
+		text-align: center;
+		padding: 20px;
+	}
+
+	.project-container.list-view .name {
+		line-height: 26px;
+		white-space: nowrap;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	.project-container.list-view .subject-count {
+		line-height: 26px;
+		font-size: 14px;
+	}
+
+	.project-container.list-view .manager-name {
+		color: #FFF;
+		display: inline-block;
+		text-align: -webkit-center;
+		text-align: center;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		max-width: 150px;
+		letter-spacing: 1px;
+	}
+
+	.project-container.list-view .project-date {
+		line-height: 26px;
+		color: #999;
+		font-size: 14px;
+	}
+
+	.project-container.list-view .func-col .btn-icon {
+		border-radius: 50px;
+		width: 50px;
+		line-height: 35px;
+		margin: 0px 10px;
+	}
+
+	.project-container.list-view .func-col .btn-icon:before {
+		margin-right: 0px;
+	}
+
+	.no-project-warnning {
+		text-align: center;
+		padding: 30px 0px;
+		color: #AAA;
+		font-size: 20px;
+		letter-spacing: 1px;
+		background: #FFF;
+		font-weight: 500;
+	}
+</style>
+<script type="text/javascript">
+	var gridView = true,
+		onSearching = false;
+	var groupBy = function(xs, key) {
+		return xs.reduce(function(rv, x) {
+			(rv[x[key]] = rv[x[key]] || []).push(x);
+			return rv;
+		}, {});
+	};
+
+	function removeProject(id) {
+		$.post("./updateProejct", {
+			id: id,
+			Alive: false
+		}).done(function(removed) {
+			listProject();
+		});
+	}
+
+	function aliveProject(id) {
+		$.post("./updateProejct", {
+			id: id,
+			Alive: true
+		}).done(function(removed) {
+			listProject();
+		});
+	}
+
+	function listProjectObj(project) {
+		var container = $("<div />", {
+			class: " row project-container list-view"
+		});
+		var col1 = $("<div />", {
+			class: "bg-info manager-name-col col-sm-3"
+		}).appendTo(container);
+		$("<div />", {
+			text: project.Creator.Name,
+			class: "manager-name"
+		}).appendTo(col1);
+		var col2 = $("<div />", {
+			class: "project-info-col col-sm-5"
+		}).appendTo(container);
+		$("<div />", {
+			text: project.Name,
+			class: "name"
+		}).appendTo(col2);
+		var subjectGroup = Object.keys(groupBy(project.Subject, "Name"));
+		$("<div />", {
+			text: "Subject : " + subjectGroup.length,
+			class: "subject-count"
+		}).appendTo(col2);
+		$("<div />", {
+			text: moment(project.createdAt).format("YYYY/MM/DD"),
+			class: "project-date"
+		}).appendTo(col2);
+		var col3 = $("<div />", {
+			class: "func-col col-sm-4"
+		}).appendTo(container);
+		$("<a />", {
+			//text: "Experiment Link",
+			title: "Experiment Link",
+			class: "icon-link btn btn-icon btn-outline-primary",
+			target: "blank",
+			href: "/experimentLogin?id=" + project.id,
+			"data-toggle": "tooltip",
+			"data-placement": "bottom"
+		}).appendTo(col3).tooltip();
+		$("<a />", {
+			//text: "Setting and Results",
+			title: "Setting and Results",
+			class: "icon-settings btn btn-icon btn-outline-info",
+			href: "/project-setting?id=" + project.id,
+			"data-toggle": "tooltip",
+			"data-placement": "bottom"
+		}).appendTo(col3).tooltip();
+		if (project.Alive) {
+			$("<a />", {
+				//text: "Remove",
+				title: "Remove",
+				class: "icon-trash btn btn-icon btn-outline-danger",
+				href: "#",
+				"data-id": project.id,
+				"data-toggle": "tooltip",
+				"data-placement": "bottom"
+			}).appendTo(col3).tooltip().click(function(event) {
+				event.preventDefault();
+				removeProject($(this).attr("data-id"));
+			});
+		} else {
+			$("<a />", {
+				//text: "Recover",
+				title: "Recover",
+				class: "icon-action-undo btn btn-icon btn-outline-secondary",
+				href: "#",
+				"data-id": project.id,
+				"data-toggle": "tooltip",
+				"data-placement": "bottom"
+			}).appendTo(col3).tooltip().click(function(event) {
+				event.preventDefault();
+				aliveProject($(this).attr("data-id"));
+			});
+		}
+
+		return container
+	}
+
+	// <div class="card text-center">
+	//   <div class="card-header">
+	//     Featured
+	//   </div>
+	//   <div class="card-body">
+	//     <h5 class="card-title">Special title treatment</h5>
+	//     <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+	//     <a href="#" class="btn btn-primary">Go somewhere</a>
+	//   </div>
+	//   <div class="card-footer text-muted">
+	//     2 days ago
+	//   </div>
+	// </div>
+	function gridProjectObj(project) {
+		var container = $("<div />", {
+			class: "card w-30 text-center project-container grid-view"
+		});
+		var header = $("<div />", {
+			class: "card-header bg-info"
+		}).appendTo(container);
+		$("<div />", {
+			text: project.Creator.Name,
+			class: "icon-user btn-icon manager-name text-light"
+		}).appendTo(header);
+		var body = $("<div />", {
+			class: "card-body"
+		}).appendTo(container);
+		$("<h5 />", {
+			text: project.Name,
+			class: "card-title project-name"
+		}).appendTo(body);
+		$("<div />", {
+			text: moment(project.createdAt).format("YYYY/MM/DD"),
+			class: "card-footer text-muted project-date bg-white icon-calendar btn-icon"
+		}).appendTo(container);
+		var subjectGroup = Object.keys(groupBy(project.Subject, "Name"));
+		$("<div />", {
+			text: subjectGroup.length + " Subjects",
+			class: "subject-count icon-people btn-icon"
+		}).appendTo(body);
+
+		var funcDiv = $("<div />", {
+			class: "project-func-container"
+		}).appendTo(body);
+		$("<a />", {
+			//text: "Experiment Link",
+			title: "Experiment Link",
+			class: "icon-link btn btn-icon btn-outline-primary",
+			target: "blank",
+			href: "/experimentLogin?id=" + project.id,
+			"data-toggle": "tooltip",
+			"data-placement": "bottom"
+		}).appendTo(funcDiv).tooltip();
+		$("<a />", {
+			//text: "Setting and Results",
+			title: "Setting and Results",
+			class: "icon-settings btn btn-icon btn-outline-info",
+			href: "/project-setting?id=" + project.id,
+			"data-toggle": "tooltip",
+			"data-placement": "bottom"
+		}).appendTo(funcDiv).tooltip();
+		if (project.Alive) {
+			$("<a />", {
+				//text: "Remove",
+				title: "Remove",
+				class: "icon-trash btn btn-icon btn-outline-danger",
+				href: "#",
+				"data-id": project.id,
+				"data-toggle": "tooltip",
+				"data-placement": "bottom"
+			}).appendTo(funcDiv).tooltip().click(function(event) {
+				event.preventDefault();
+				removeProject($(this).attr("data-id"));
+			});
+		} else {
+			$("<a />", {
+				//text: "Recover",
+				title: "Recover",
+				class: "icon-action-undo btn btn-icon btn-outline-secondary",
+				href: "#",
+				"data-id": project.id,
+				"data-toggle": "tooltip",
+				"data-placement": "bottom"
+			}).appendTo(funcDiv).tooltip().click(function(event) {
+				event.preventDefault();
+				aliveProject($(this).attr("data-id"));
+			});
+		}
+		//$('[data-toggle="tooltip"]').tooltip();
+		return container
+	}
+
+	function listViewRender(projects) {
+		$("#project-list-container .list-view-container").html("");
+		$("#project-list-container .grid-view-container").html("");
+		if (projects.length > 0) {
+			for (var i = 0; i < projects.length; i++) {
+				var projectObj = listProjectObj(projects[i]);
+				$(projectObj).appendTo("#project-list-container .list-view-container");
+			};
+		} else {
+			$("<div />", {
+				text: "No Project!",
+				class: "no-project-warnning"
+			}).appendTo("#project-list-container .grid-view-container");
+		}
+	}
+
+	function gridViewRender(projects) {
+		$("#project-list-container .grid-view-container").html("");
+		$("#project-list-container .list-view-container").html("");
+		if (projects.length > 0) {
+			for (var i = 0; i < projects.length; i++) {
+				var projectObj = gridProjectObj(projects[i]);
+				$(projectObj).appendTo("#project-list-container .grid-view-container");
+			};
+		} else {
+			$("<div />", {
+				text: "No Project!",
+				class: "no-project-warnning"
+			}).appendTo("#project-list-container .grid-view-container");
+		}
+
+	}
+	var listQuery;
+
+	function listProject() {
+		$("#project-list-container").elementLoading();
+		$.get("/listProject", listQuery).done(function(projects) {
+			$("#project-list-container").elementLoaded();
+			if (gridView) {
+				gridViewRender(projects);
+			} else {
+				listViewRender(projects);
+			}
+		});
+	};
+
+	function searchProject() {
+		$("#project-list-container").elementLoading();
+		var searchTerm = $("#search-query-input").val();
+		if (searchTerm.length == 0) {
+			onSearching = false;
+			listProject();
+		} else {
+			onSearching = true;
+			$.get("/searchProject", {
+				query: searchTerm
+			}).done(function(projects) {
+				$("#project-list-container").elementLoaded();
+				if (gridView) {
+					gridViewRender(projects);
+				} else {
+					listViewRender(projects);
+				}
+			});
+		}
+	}
+
+	function listManager() {
+		//<a class="btn-sm dropdown-item manager-option" data-value="all" href="#">Created By All Managers</a>
+		$("<a />", {
+			class: "btn-sm dropdown-item manager-option",
+			text: "Created By All Managers",
+			"data-value": "all",
+			href: "#"
+		}).appendTo("#manager-sort-select");
+		$('<div class="dropdown-divider"></div>').appendTo("#manager-sort-select");
+		$.get("/listManager").done(function(list) {
+			$.each(list, function(i, obj) {
+				$("<a />", {
+					class: "btn-sm dropdown-item manager-option",
+					text: obj.Name,
+					"data-value": obj.id,
+					href: "#"
+				}).appendTo("#manager-sort-select");
+			});
+			$(".manager-option").click(function(e) {
+				e.preventDefault();
+				listQuery.or.splice(0, listQuery.or.length);
+				var txt = $(this).text();
+				$("#manager-option").html(txt);
+				if ($(this).attr("data-value") == "all") {
+					listQuery.or.push({
+						Creator: manager.id
+					});
+					listQuery.or.push({
+						Editor: manager.id
+					});
+					// for (var i = 0; i < list.length; i++) {
+					// 	listQuery.or.push({
+					// 		Creator: list[i].id
+					// 	});
+					// }
+					listQuery.or.push({
+						CreaterEditorOnly: false
+					});
+					listProject();
+				} else {
+					listQuery.or.push({
+						Creator: $(this).attr("data-value")
+					});
+					console.log(listQuery);
+					listProject();
+				}
+			});
+		});
+	}
+
+	function ini() {
+
+		listQuery = {
+			Alive: true,
+			or: [{
+					Creator: manager.id
+				},
+				{
+					Editor: manager.id
+				},
+				{
+					CreaterEditorOnly: false
+				}
+			],
+			sort: "updatedAt DESC"
+		};
+		$.fpLoaded();
+		listManager();
+		listProject();
+		$("#grid-view-switcher").click(function() {
+			if (!$(this).hasClass("active")) {
+				$("#list-view-switcher").removeClass("active");
+				$("#project-list-container .list-view-container").fadeOut(function() {
+					$("#project-list-container .grid-view-container").fadeIn();
+				});
+				$(this).addClass("active");
+				gridView = true;
+				listProject();
+			}
+		});
+		$("#list-view-switcher").click(function() {
+			if (!$(this).hasClass("active")) {
+				$("#grid-view-switcher").removeClass("active");
+				$("#project-list-container .grid-view-container").fadeOut(function() {
+					$("#project-list-container .list-view-container").fadeIn();
+				});
+				$(this).addClass("active");
+				gridView = false;
+				listProject();
+			}
+		});
+		$(".filter-alive").click(function(e) {
+			e.preventDefault();
+			listQuery.Alive = ($(this).attr("data-value") == 'true');
+			listProject();
+			var txt = $(this).text();
+			$("#filter-alive").html(txt);
+		});
+		$(".filter-sort").click(function(e) {
+			e.preventDefault();
+			listQuery.sort = $(this).attr("data-value");
+			listProject();
+			var txt = $(this).text();
+			$("#filter-sort").html(txt);
+		});
+		$("#search-query-input").keypress(function(e) {
+			if (e.which == 13) {
+				searchProject();
+			}
+		});
+		$("#search-btn").click(function() {
+			searchProject();
+		});
+		$("#cancel-search-btn").click(function() {
+			onSearching = false;
+			listProject();
+			$("#search-query-input").val("");
+		});
+
+	}
+</script>
+<div class="page-container">
+	<div class="project-filter-container">
+		<div class="search-container">
+			<div class="input-group mb-3">
+				<input id="search-query-input" type="text" class="form-control form-control-sm" placeholder="" aria-label="" aria-describedby="">
+				<div class="input-group-append">
+					<button id="search-btn" class="btn btn-outline-secondary btn-sm" type="button">Search</button>
+				</div>
+			</div>
+		</div>
+		<a id="new-project-link" class="icon-plus btn-icon" href="/newProject">New Project</a>
+
+	</div>
+
+
+	<div id="project-list-container">
+		<div class="project-view-container">
+			<div class="btn-group">
+				<button id="filter-alive" type="button" class="icon-screen-tablet btn-icon btn btn-outline-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Active Project</button>
+				<div class="dropdown-menu">
+					<a class="btn-sm dropdown-item filter-alive" href="#" data-value=true>Active Project</a>
+					<a class="btn-sm dropdown-item filter-alive" href="#" data-value=false>Inactive Project</a>
+				</div>
+			</div>
+			<div class="btn-group">
+				<button id="filter-sort" type="button" class="icon-calendar btn-icon btn btn-outline-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Sort by Updated Date
+	  </button>
+				<div class="dropdown-menu">
+					<a class="btn-sm dropdown-item filter-sort" href="#" data-value="updatedAt DESC">Sort by Updated Date</a>
+					<a class="btn-sm dropdown-item filter-sort" href="#" data-value="createdAt DESC">Sort by Created Date</a>
+				</div>
+			</div>
+			<div class="btn-group">
+				<button id="manager-option" type="button" class="icon-people btn-icon btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    Created By All Managers
+	  </button>
+				<div id="manager-sort-select" class="dropdown-menu">
+					<!-- <a class="btn-sm dropdown-item manager-option" data-value="all" href="#">Created By All Managers</a> -->
+				</div>
+			</div>
+			<div class="icon-btn-group">
+				<span class="view-switcher active" id="grid-view-switcher"><i class="fa fa-th"></i></span>
+				<span class="view-switcher" id="list-view-switcher"><i class="fa fa-list"></i></span>
+			</div>
+		</div>
+		<div class="grid-view-container"></div>
+		<div class="container list-view-container"></div>
+	</div>
+</div>

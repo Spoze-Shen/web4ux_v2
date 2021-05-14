@@ -1,0 +1,56 @@
+<style type="text/css">
+#device-list-container {
+    padding: 20px 25px;
+}
+
+#device-list-container .device-list-group {
+
+}
+
+#device-list-container .device-list-group .model-name {
+
+}
+
+#device-list-container .device-list-group .device-name {
+    font-weight: 500;
+}
+
+#device-list-container .device-list-group .rang {
+
+}
+
+#device-list-container .device-list-group .set-rang-link {}
+
+</style>
+<script type="text/javascript">
+function ini() {
+	$(".project-nav-link[data-nav='devices']").addClass("active");
+	$.each(project.Devices, function(i, d) {
+		var group = $("<div />", {
+			class: "form-group row added-devices-group device-list-group"
+		}).appendTo("#device-list-container");
+		$("<div />", {
+			class: "col-sm-1 model-name",
+			text: d.ModelName +" - "
+		}).appendTo(group);
+		$("<div />", {
+			class: "col-sm-3 device-name",
+			text: d.DeviceName
+		}).appendTo(group);
+		$("<div />", {
+			class: "col-sm-3 rang",
+			text: "Rang " + d.Rang
+		}).appendTo(group);
+		$("<a />", {
+			class: "btn btn-sm btn-outline-success set-rang-link",
+			text: "Test Screen",
+			href: "/project-calibrate?id="+d.id
+		}).appendTo(group);
+	});
+}
+
+</script>
+<div class="project-container">
+	<div id="device-list-container">
+	</div>
+</div>

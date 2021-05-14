@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>TP 2.0</title>
+  <!-- Viewport mobile tag for sensible mobile support -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <style type="text/css">
+  </style>
+  <!--STYLES-->
+  <link rel="stylesheet" href="/min/production.min.css">
+  <!--STYLES END-->
+  <style type="text/css">
+    .page-container {
+      background-color: #f2eee2;
+      min-height: 100vh;
+      padding-top: 20px;
+    }
+
+    .test-guide-container {
+      text-align: center;
+      display: block;
+      padding: 20px 0px;
+      background: #FFF;
+      border: 1px solid rgba(0, 0, 0, .0625);
+      width: 90%;
+      margin: 0px auto;
+    }
+
+    .test-guide-container img {
+      width: 80px;
+    }
+
+    .test-guide-container .guide-content-container {
+      width: 80%;
+      display: block;
+      margin: 30px auto;
+      text-align: left;
+    }
+
+    .test-title {
+      text-align: center;
+      padding-bottom: 30px;
+    }
+
+    .test-guide-container .test-control-container {
+      display: block;
+      width: 38%;
+      text-align: -webkit-center;
+      margin: 50px auto;
+    }
+
+    .test-guide-container .test-control-container .test-control-link {
+      display: inline-block;
+      text-align: center;
+      line-height: 38px;
+      font-size: 20px;
+      background: #337ab7;
+      color: #FFF;
+      text-decoration: none;
+      padding: 5px 30px;
+      letter-spacing: 1px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .finish-test-popup-container {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      background: rgba(200, 200, 200, 0.9);
+      width: 100vw;
+      height: 100vh;
+      display: none;
+      z-index: 999;
+    }
+
+    .finish-test-popup-container .finish-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #FFF;
+      padding: 20px 20px;
+      border: 1px solid rgba(0, 0, 0, .0625);
+      text-align: center;
+    }
+
+    .finish-test-popup-container .finish-content {
+      font-weight: 500;
+      padding: 10px 0px;
+    }
+
+    .finish-test-popup-container .finish-test-fun-container {
+      text-align: center;
+    }
+
+    .finish-test-popup-container .finish-one-test-link {
+      display: inline-block;
+      text-align: center;
+      line-height: 50px;
+      font-size: 20px;
+      background: #337ab7;
+      color: #FFF;
+      text-decoration: none;
+      padding: 5px 30px;
+      letter-spacing: 1px;
+      border-radius: 5px;
+    }
+  </style>
+  <script>
+    window.addEventListener('popstate', function (event) {
+      // The popstate event is fired each time when the current history entry changes.
+
+      var r = confirm("You pressed a Back button! Are you sure?!");
+
+      if (r == true) {
+        // Call Back button programmatically as per user confirmation.
+        history.back();
+        // Uncomment below line to redirect to the previous page instead.
+        // window.location = document.referrer // Note: IE11 is not supporting this.
+      } else {
+        // Stay on the current page.
+        history.pushState(null, null, window.location.pathname);
+      }
+
+      history.pushState(null, null, window.location.pathname);
+
+    }, false);
+  </script>
+</head>
+
+<body>
+  <%- body %>
+  <div class="popup-console">
+    <div class="console-box">
+      <div class="console-content"></div>
+      <div id="offline-duration"></div>
+      <button class="confirm-btn">OK</button>
+      <button id="cancel-popup">Cancel</button>
+    </div>
+  </div>
+  <!--SCRIPTS-->
+  <script src="/min/production.min.js"></script>
+  <!--SCRIPTS END-->
+  <script src="https://use.fontawesome.com/dbb9cb4177.js"></script>
+  <script type="text/javascript">
+    var project = <%-JSON.stringify(data.project) %>;
+    var device = <%-JSON.stringify(data.device) %>;
+    var subject = <%-JSON.stringify(data.subject) %>;
+    var experiment = <%-JSON.stringify(data.experiment) %>;
+    var lostConnectionStarTime = 0;
+    var lostConnectionDuration = 0;
+    var hasDisconnect = false;
+    var needConfirmRefresh = false;
+    function msieversion() {
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+      if (msie > 0) // If Internet Explorer, return version number
+      {
+        //alert(parseInt(ua.substring(msie + 5, ua.indexOf(".", msie))));
+        console.log("IE");
+        window.location.replace("http://stackoverflow.com");
+      } else // If another browser, return 0
+      {
+        //alert('otherbrowser');
+        console.log("Not IE");
+      }
+      return false;
+    }
+    var durTimer;
+    function startCountDuration() {
+      durTimer = setInterval(function () {
+        $("#offline-duration").html(lostConnectionDuration + (moment().format("x") - lostConnectionStarTime));
+      }, 1000);
+    }
+    function lostConnectionPopup(txt, complete, connected) {
+      $("#cancel-popup").hide();
+      $(".popup-console>.console-box>.confirm-btn").hide();
+      if (connected) {
+        $(".popup-console>.console-box>.confirm-btn").show();
+      }
+      $(".popup-console").fadeIn();
+      $(".popup-console>.console-box>.console-content").html(txt);
+      $(".popup-console>.console-box>.confirm-btn").unbind();
+      $(".popup-console>.console-box>.confirm-btn").click(function (event) {
+        event.stopPropagation();
+        lostConnectionDuration = (moment().format("x") - lostConnectionStarTime);
+        $(".popup-console").fadeOut();
+        //clearInterval(durTimer);
+        var nowX=moment().format("x");
+        //console.log(lostConnectionStarTime, lostConnectionDuration);
+        //console.log(moment(nowX, "x").format('YYYYMMDD HH:mm:ss'), moment(nowX-lostConnectionDuration, "x").format('YYYYMMDD HH:mm:ss'));
+        $.isFunction(complete) && complete.call(this);
+      });
+    }
+    window.addEventListener('offline', function (e) {
+      lostConnectionStarTime = moment().format("x");
+      hasDisconnect=true;
+      //startCountDuration();
+      lostConnectionPopup("Lost network connection...Try to reconnect...", function () { }, false);
+    });
+    window.addEventListener('online', function (e) {
+      lostConnectionPopup("Network reconnected, please press ok to continue ...", function () { }, true);
+    });
+    $(window).bind('beforeunload', function(){
+      //
+      //return confirm("Confirm refresh");
+      if(needConfirmRefresh){
+        return '>>>>>Before You Go<<<<<<<< \n Your custom message go here';
+      }
+    });
+    $(document).ready(function () {
+      // $.fpLoading();
+      msieversion();
+      ini();
+      // console.log(project);
+      // console.log(device);
+      // console.log(subject);
+      // console.log(experiment);
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Login - TP Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="/styles/importer.css">
+  <link rel="stylesheet" href="/styles/layout.css">
+  <link rel="stylesheet" href="/styles/bootstrap.css">
+  <style type="text/css">
+    .page-container {
+      background-color: #f2eee2;
+    }
+
+    .full-screen-container {
+      position: relative;
+      height: 100vh;
+      width: 100vw;
+      display: block;
+    }
+
+    .login-container {
+      position: absolute;
+      left: 50%;
+      top: 40%;
+      -ms-transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%);
+      text-align: center;
+      opacity: 0;
+      transition-property: all;
+      transition-duration: 0.5s;
+      transition-timing-function: ease-in-out;
+      transition-delay: 0s;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px 30px;
+      border-radius: 5px;
+      -webkit-box-shadow: 0 0 10px 0 #999999;
+      -moz-box-shadow: 0 0 10px 0 #999999;
+      box-shadow: 0 0 10px 0 #999999;
+    }
+
+    .login-container.active {
+      opacity: 1;
+    }
+
+    #login-brand-img {
+      width: 60px;
+      margin: 20px 0px;
+    }
+
+    #login-title {
+      font-size: 28px;
+      letter-spacing: 5px;
+      font-weight: 200;
+    }
+
+    #login-box {
+      border: 0px;
+      border-radius: 6px 6px 0px 0px;
+      text-align: -webkit-center;
+      text-align: center;
+    }
+
+
+
+    #login-btn {
+      padding: 4px 0px;
+      color: #AAA;
+      border: 1px solid #AAA;
+      cursor: pointer;
+      text-align: -webkit-center;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 200;
+      padding: 10px 15px;
+      margin: 16px 0px;
+      width: 400px;
+      background-color: rgba(255, 255, 255, 0);
+      display: block;
+      position: relative;
+    }
+
+    #login-btn:disabled {}
+
+    .login-input {
+      font-size: 18px;
+      font-weight: 200;
+      padding: 10px 15px;
+      margin: 16px 0px;
+      width: 400px;
+      background-color: rgba(255, 255, 255, 0);
+      border: 1px solid #ddd;
+      display: block;
+    }
+
+    .login-input.error {
+      border: 1px solid #C30;
+    }
+
+    #login-btn .login-text {}
+
+    #login-btn .login-loading {
+      width: 30px;
+      text-align: -webkit-center;
+      text-align: center;
+      opacity: 0;
+      transition-property: all;
+      transition-duration: 0.5s;
+      transition-timing-function: ease-in-out;
+      transition-delay: 0s;
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translate(0%, -50%);
+    }
+
+    #login-btn:disabled .login-loading {
+      opacity: 1;
+    }
+
+
+
+    input:-webkit-autofill {
+      background-color: #fff !important;
+      color: #fff !important;
+    }
+
+    #login-device {
+      -webkit-appearance: button;
+      -webkit-border-radius: 0px;
+      -webkit-padding-end: 10px;
+      background: none;
+      border: 1px solid #AAA;
+      text-align: center;
+      overflow: hidden;
+      line-height: 40px;
+      width: 100%;
+      padding-left: 10px;
+    }
+
+    #error-login-container {
+      display: none;
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    #login-error-text {
+      font-size: 16px;
+      letter-spacing: 2px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      /* width: 80%; */
+      display: block;
+      text-align: center;
+      background: #FFF;
+      border: 1px solid #EEE;
+      padding: 25px 10px;
+    }
+
+    #auth-manager-password {
+      display: block;
+      margin: 25px auto;
+      width: 300px;
+    }
+
+    #reset-subject-data {}
+
+    #login-error-text button {
+      background: none;
+      border-radius: 0px;
+      padding: 5px 20px;
+      color: #333;
+      font-weight: 900;
+    }
+
+    #pwd-wrong-elert {
+      display: none;
+      color: #C30;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- <div class="page-background" style="background-image:url(./images/background/user-login.jpg);">
+    <div class="page-background-cover"></div>
+  </div> -->
+  <div class="page-container">
+    <div class="full-screen-container">
+      <div class="login-container">
+        <!-- <img id="login-brand-img" src="./images/blue-logo.png" alt=""> -->
+        <p id="login-title">TouchPad Experiment</p>
+        <form action="/" method="POST" id="login-box">
+          <input type="text" id="login-name" class="login-input" placeholder="Name" autocomplete="off">
+          <select id="login-device">
+            <option value="">Choose your model</option>
+          </select>
+          <button id="login-btn" type="submit" form="login-box">
+            <span class="login-text">Start</span>
+            <img class="login-loading" src="./images/loading.gif">
+          </button>
+        </form>
+      </div>
+    </div>
+    <div id="error-login-container">
+      <div id="login-error-text">Duplicated login!!!! Subject number <strong id="error-subject"></strong> has signed in
+        this project with model : <strong id="error-device"></strong>. Please enter the passwords of project owner to
+        retest.
+        <input id="auth-manager-password" type="password" placeholder="Password of this project owner">
+        <div id="pwd-wrong-elert">*** Wrong password! ***</div>
+        <button id="cancel-reset">Cancel</button>
+        <button id="reset-subject-data">Continue</button>
+      </div>
+    </div>
+  </div>
+  <script src="/js/dependencies/sails.io.js"></script>
+  <script src="/js/dependencies/jquery.js"></script>
+  <script type="text/javascript">
+    var project = <%-JSON.stringify(data.project) %>;
+    var duplicateData = {
+      Subject: "",
+      ProjectDevice: ""
+    };
+    $(document).ready(function () {
+      console.log(project);
+      $.each(project.Devices, function (i, obj) {
+        $("<option />", {
+          text: obj.ModelName,
+          value: obj.id,
+          "data-name": obj.ModelName
+        }).appendTo("#login-device");
+      });
+      setTimeout(function () {
+        $(".login-container").addClass("active");
+      }, 800);
+      // $("#auth-duplicate-yes").click(function() {
+      //     newCookie.subjectName = $("#login-name").val();
+      //     var authDuplicate = {
+      //         oldCookie: newCookie,
+      //         newCookie: {
+      //             subjectName: $("#login-name").val(),
+      //             subjectDevice: newCookie.subjectDevice,
+      //             projectId: newCookie.projectId,
+      //             manager: newCookie.manager,
+      //             pass: $("#duplicate-pass").val(),
+      //             test1: $("#duplicate-test1").prop("checked"),
+      //             test2: $("#duplicate-test2").prop("checked"),
+      //             test3: $("#duplicate-test3").prop("checked")
+      //         }
+      //     };
+      //     $.get("./authDuplicate", authDuplicate).done(function(data) {
+      //         if (data.auth) {
+      //             window.location = "/";
+      //         } else {
+      //             alert("Wrong Passwords!!!");
+      //         }
+      //     });
+      // });
+      $("#reset-subject-data").click(function () {
+        $("#pwd-wrong-elert").hide();
+        console.log(duplicateData);
+        $.post("./authDuplicate", {
+          Project: project.id,
+          Subject: duplicateData.Subject,
+          ProjectDevice: duplicateData.ProjectDevice,
+          Manager: project.Creator,
+          Pwd: $("#auth-manager-password").val()
+        }).done(function (data) {
+          console.log(data);
+          if (data.Auth) {
+            $("#error-login-container").fadeOut(function () {
+              login();
+            });
+          } else {
+            $("#pwd-wrong-elert").show();
+
+          }
+
+        });
+      });
+      $("#cancel-reset").click(function () {
+        $("#error-login-container").fadeOut();
+      });
+
+      function login() {
+        var error = false;
+        $("#login-box .login-input").removeClass("error");
+        $("#login-btn").prop("disabled", true);
+        if ($("#login-name").val() == null || $("#login-name").val() == undefined || $("#login-name").val() == "") {
+          $("#login-name").addClass("error");
+          error = true;
+        }
+        if ($("#login-device").val() == null || $("#login-device").val() == undefined || $("#login-device").val() == "") {
+          $("#login-device").addClass("error");
+          error = true;
+        }
+        if (error) {
+          $("#login-btn").prop("disabled", false);
+          return false;
+        } else {
+          $.post("/authSubject", {
+            Name: $("#login-name").val(),
+            Project: project.id,
+            ProjectDevice: $("#login-device").val(),
+            TestUrl: project.TestUrl,
+            TestName: project.TestName
+          }).done(function (response) {
+            if (response.error) {
+              alert(response);
+            } else {
+              console.log(response);
+              $("#login-btn").prop("disabled", false);
+              if (response.auth) {
+                subjectId = response.subjectData.id;
+                window.location = "/experimentHome?subjectId=" + subjectId;
+              } else {
+                $("#error-login-container").show();
+                $("#error-subject").html($("#login-name").val());
+                $("#error-device").html($("#login-device").find(":selected").text());
+                duplicateData.Subject = response.data.id;
+                duplicateData.ProjectDevice = response.data.ProjectDevice;
+                console.log(response);
+              }
+            }
+          });
+        }
+      }
+      $("#login-btn").click(function () {
+
+      });
+      $("#login-box").submit(function (event) {
+        event.preventDefault();
+        login();
+      });
+    });
+  </script>
+</body>
+
+</html>

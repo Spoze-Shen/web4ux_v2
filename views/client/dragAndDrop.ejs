@@ -1,0 +1,631 @@
+<style>
+  body {
+    background-color: #FFF;
+    width: 100vW;
+    height: 100vh;
+  }
+
+  #window {
+    position: relative;
+    margin: 20px;
+    width: 700px;
+  }
+
+  .folder-container {}
+
+  .file {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    z-index: 500;
+    font-size: 12px;
+    display: none;
+    border: 1px solid rgba(0, 0, 0, 0);
+  }
+
+  .file:hover {
+    border: 1px solid #45b3e0;
+    border-radius: 3px;
+    background: rgba(201, 233, 246, 0.2);
+  }
+
+  .file-after-selected {
+    border: 1px solid #45b3e0;
+  }
+
+  .file-selected {
+    border: 1px solid #45b3e0;
+    border-radius: 3px;
+    background: rgba(201, 233, 246, 1) !important;
+  }
+
+  .file>img {
+    width: 15mm;
+    height: 15mm;
+  }
+
+  .file>span {
+    display: block;
+  }
+
+  #target {
+    position: absolute;
+    text-align: center;
+    cursor: pointer;
+    z-index: 300;
+    font-size: 12px;
+    top: 25%;
+    border-radius: 3px;
+  }
+
+  #target:hover {
+    background: rgba(150, 150, 150, 0.6);
+  }
+
+  #target>img {
+    width: 60px;
+    height: 65px;
+  }
+
+  #target>span {
+    display: block;
+  }
+
+  #window-open {
+    display: none;
+    position: absolute;
+    left: 60px;
+    top: 20px;
+    background: #FFF;
+    z-index: 999;
+  }
+
+  #window-open>img {
+    width: 700px;
+  }
+
+  #window-open>span {
+    display: block;
+    width: 37px;
+    height: 15px;
+    position: absolute;
+    right: 5px;
+    top: 0px;
+    border: 2px solid rgba(0, 0, 0, 0);
+    cursor: pointer;
+  }
+
+  #window-open>span:hover {
+    border: 1px solid #AAA;
+  }
+
+  #popupcover {
+    position: absolute;
+    background: rgba(0, 0, 0, 0);
+    width: 100vw;
+    height: 100vh;
+    left: 0px;
+    top: 0px;
+    z-index: 900;
+    display: none;
+  }
+
+  .change-side-popup {
+    position: absolute;
+    background: rgba(200, 200, 200, 0.9);
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: 999;
+    display: none;
+    text-align: center;
+  }
+
+  .change-side-popup .wrapper {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #FFF;
+    padding: 20px 20px;
+    border: 1px solid rgba(0, 0, 0, .0625);
+    text-align: center;
+  }
+
+  .change-side-popup button {
+
+    margin: 10px auto;
+  }
+
+  .change-side-popup .content {
+    text-align: -webkit-center;
+    font-size: 20px;
+    font-weight: 500;
+  }
+</style>
+<script type="text/javascript">
+  var startExperimentTime = 0;
+
+  var testSettings = {
+    totalFiles: 10,
+    side: "left" //從左拖到右，如果是又拖到左就是設定成right
+  };
+  /*每次拖曳產生的輸出資料*/
+  var eachRoundData = {
+    EventType: "",
+    Side: "left",
+    Round: 1, //第幾次拖曳
+    Success: false, //拖曳是否成功放下檔案
+    StartTime: "", //開始拖曳時間點
+    EndTime: "", //拖曳結束時間點
+    FileIndex: "", //此次拖曳是托哪一個file，所以在產生file的時候要給每一個Index
+    Duration: 0, //經過的時間，不管是拖曳成功還是失敗，都要記錄經過時間
+    TotalDuration: 0,
+    DragPoint: {
+      x: 0,
+      y: 0
+    },
+    DropPoint: { //記錄是在哪一個點把file放下的
+      x: 0,
+      y: 0
+    },
+    FailClick: {
+      x: 0,
+      y: 0
+    },
+    ClickNoneFile: false,
+    Counter: 1
+  };
+
+  var socket;
+  var disConned = false;
+
+  function onlistenConnection() {
+    setInterval(function() {
+      var online = navigator.onLine;
+      if (!online) {
+        disConned = true;
+        lostConnectionStarTime = moment().format("x");
+        lostConnectionPopup("Lost connection...Try to reconnect...", function() {}, false);
+      }
+      if (online && disConned) {
+        lostConnectionPopup("Connected! Please press OK to continue.", function() {
+          disConned = false;
+          lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+        }, true);
+      }
+    }, 200);
+    socket = io.connect();
+    socket.on('reconnect', function() {
+      lostConnectionPopup("Connected! Please press OK to continue.", function() {
+        lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+      }, true);
+    });
+    socket.on('disconnect', function() {
+      lostConnectionStarTime = moment().format("x");
+      lostConnectionPopup("Lost connection...Try to reconnect...", function() {}, false);
+    });
+    $("#puase-test").click(function() {
+      event.stopPropagation();
+      lostConnectionStarTime = moment().format("x");
+      lostConnectionPopup("Pausing... Click Ok to Continue.", function() {
+        lostConnectionDuration = lostConnectionDuration + (moment().format("x") - lostConnectionStarTime);
+      }, true);
+    });
+  }
+
+  function settingFiles(side) {
+    if (side == "left") {
+      $("#target").css({
+        right: "10%",
+        left: "auto"
+      });
+      var firstRowLeft = 200;
+      var secondRowLeft = 200;
+      $(".file").each(function(index) {
+        $(this).attr("iniPos", "True");
+        if (index < 5) {
+          $(this).css({
+            top: 100 + "px",
+            left: firstRowLeft + "px"
+          });
+          firstRowLeft += 80;
+        } else {
+          $(this).css({
+            top: 200 + "px",
+            left: secondRowLeft + "px"
+          });
+          secondRowLeft += 80;
+        }
+      });
+    } else {
+      $("#window").css("float", "right");
+      $("#target").css({
+        right: "auto",
+        left: "10%"
+      });
+      var firstRowRight = 480;
+      var secondRowRight = 480;
+      $(".file").each(function(index) {
+        if (index < 5) {
+          $(this).css({
+            top: 100 + "px",
+            right: firstRowRight + "px",
+            left: "auto"
+          });
+          firstRowRight -= 80;
+        } else {
+          $(this).css({
+            top: 200 + "px",
+            right: secondRowRight + "px",
+            left: "auto"
+          });
+          secondRowRight -= 80;
+        }
+      });
+    }
+    $(".file").show();
+  }
+  function logRecord(log){
+    log.Project = project.id;
+    log.ProjectDevice = device.id;
+    log.Subject = subject;
+    $.post("./dragAndDropRecord", log).done(function(record){
+      if (record.error) {
+        setTimeout(function () {
+          console.log("fail re try", log);
+          //log.ClickTime = moment().format("x");
+          logRecord(log);
+        }, 3000);
+        disConned = true;
+        disConnTime = moment().format("x");
+        lostConnectionStarTime = moment().format("x");
+        hasDisconnect=true;
+        lostConnectionPopup("Lost network connection...Try to reconnect...", function () { }, false);
+      } else {
+        console.log(record);
+        if (disConned) {
+          disConned = false;
+          lostConnectionPopup("Network reconnected, please press ok to continue ...", function () { }, true);
+        }
+      }
+    }).fail(function (a) {
+      setTimeout(function () {
+      console.log("fail re try", log);
+      //log.ClickTime = moment().format("x");
+      logRecord(log);
+      }, 3000);
+      disConned = true;
+      disConnTime = moment().format("x");
+      lostConnectionStarTime = moment().format("x");
+      hasDisconnect=true;
+      lostConnectionPopup("Lost network connection...Try to reconnect...", function () { }, false);
+    });
+  }
+  var dragFilePosition = {
+    x: 0,
+    y: 0
+  };
+  var stopRecord = false;
+
+  function ini() {
+    $("#finish-btn").attr("href", "./finishOneTest?subjectId="+subject);
+    needConfirmRefresh=true;
+    startExperimentTime = moment().format("x");
+    /*所有監測事件發生從這裡開始*/
+    settingFiles("left");
+    $(".file").draggable({
+      start: function(event, ui) {
+        event.stopPropagation();
+        var newSelected = $(this);
+        var oldSelected = $(".file-selected");
+        $(newSelected).addClass("file-selected");
+        $(oldSelected).removeClass("file-selected");
+        var offset = $(this).offset();
+        dragFilePosition.x = offset.left;
+        dragFilePosition.y = offset.top;
+        eachRoundData.EventType = "drag";
+        eachRoundData.ClickNoneFile = false;
+        eachRoundData.StartTime = moment().format("x");
+        eachRoundData.FileIndex = $(this).attr("id");
+        eachRoundData.DragPoint.y = event.pageY;
+        eachRoundData.DragPoint.x = event.pageX;
+        eachRoundData.FailClick.x = 0;
+        eachRoundData.FailClick.y = 0;
+      },
+      stop: function(event, ui) {
+        event.stopPropagation();
+        eachRoundData.Success = collision(event.pageX, event.pageY, $("#target")); //紀錄成功與否
+        eachRoundData.EndTime = moment().format("x");
+        eachRoundData.Duration = eachRoundData.EndTime - eachRoundData.StartTime;
+        eachRoundData.DropPoint.y = event.pageY;
+        eachRoundData.DropPoint.x = event.pageX;
+        eachRoundData.TotalDuration = eachRoundData.EndTime - startExperimentTime - lostConnectionDuration;
+        if (eachRoundData.Success) { //如果拖曳成功
+          eachRoundData.EventType = "successDrop";
+          var eachTemp = eachRoundData;
+          logRecord(eachTemp);
+          // $.post("./dragAndDropRecord", eachTemp, function(record) {
+          //   if (record.error) {
+          //     alert("System error!");
+          //   } else {
+          //     console.log(record);
+          //   }
+          // }).fail(function (a) {
+          //   setTimeout(function () {
+          //     console.log("fail re try", log);
+          //     //log.ClickTime = moment().format("x");
+          //     logClick(log);
+          //   }, 3000);
+          //   disConned = true;
+          //   disConnTime = moment().format("x");
+          //   lostConnectionStarTime = moment().format("x");
+          //   hasDisconnect=true;
+          //   lostConnectionPopup("Lost network connection...Try to reconnect...", function () { }, false);
+          // });
+          $(this).hide(); //FILE消失
+          if (eachRoundData.Round == testSettings.totalFiles) {
+            if (eachRoundData.Side == "left") {
+              settingFiles("right");
+              eachRoundData.Side = "right";
+              eachRoundData.Round = 1;
+              stopRecord = true;
+              $(".change-side-popup").fadeIn();
+            } else {
+              // consolePopup("Experimant Finished! Press OK to continue.", function() {
+              //     window.location = "./experimentFinished?finishedTest=test2";
+              // });
+              stopRecord = true;
+              needConfirmRefresh=false;
+              $(".finish-test-popup-container").fadeIn();
+            }
+
+          } else {
+            eachRoundData.Round += 1;
+          }
+
+        } else {
+          eachRoundData.EventType = "failDrop";
+          if (collisionArea($(this), $("#window")) && $(this).attr("iniPos") == "True") {
+            $(this).animate({
+              left: dragFilePosition.x,
+              top: dragFilePosition.y
+            }, 300);
+            eachRoundData.EventType = "failDropIner";
+          } else if (!collisionArea($(this), $("#window"))) {
+            $(this).attr("iniPos", "False");
+            eachRoundData.EventType = "failDropMiddle";
+          }
+          if (collisionArea($(this), $("#target"))) {
+            eachRoundData.EventType = "failDropOverlapping";
+          }
+          var eachTemp = eachRoundData;
+          logRecord(eachTemp);
+          // $.post("./dragAndDropRecord", eachTemp, function(record) {
+          //   if (record.error) {
+          //     alert("System error!");
+          //   } else {
+          //     console.log(record);
+          //   }
+          // });
+        }
+        eachRoundData.FileIndex = "";
+      }
+    }); //物件榜定拖曳事件
+    $("#window-open").draggable();
+    $("body").click(function(event) {
+      if (!stopRecord) {
+        $(".file-selected").removeClass("file-selected");
+        // setTimeout(function() {
+        //     if (!dbClicking) {
+        //         eachRoundData.EventType = "clickNoneFile";
+        //         eachRoundData.Success = false;
+        //         eachRoundData.ClickNoneFile = true;
+        //         eachRoundData.Duration = 0;
+        //         eachRoundData.StartTime = moment().format("x");
+        //         eachRoundData.FailClick.x = event.pageX;
+        //         eachRoundData.FailClick.y = event.pageY;
+        //         eachRoundData.DragPoint.x = 0;
+        //         eachRoundData.DragPoint.y = 0;
+        //         eachRoundData.DropPoint.x = 0;
+        //         eachRoundData.EndTime = moment().format("x");
+        //         eachRoundData.Duration = 0;
+        //         eachRoundData.DropPoint.x = 0;
+        //         eachRoundData.DropPoint.y = 0;
+        //         eachRoundData.TotalDuration = eachRoundData.EndTime - startExperimentTime - lostConnectionDuration;
+        //         var eachTemp = eachRoundData;
+        //         $.post("./dragAndDropRecord", eachTemp, function(record) {
+        //             if (record.error) {
+        //                 alert("System error!");
+        //             } else {
+        //                 console.log(record);
+        //             }
+        //         });
+        //     }
+        //
+        // }, 200);
+      }
+
+    });
+    $(".file").click(function(event) {
+      event.stopPropagation();
+      var newSelected = $(this);
+      var oldSelected = $(".file-selected");
+      $(newSelected).addClass("file-selected");
+      $(oldSelected).removeClass("file-selected");
+    });
+    var dbClicking = false;
+    $(".file").dblclick(function(event) {
+      event.stopPropagation();
+      //event.preventDefault();
+      dbClicking = true;
+      eachRoundData.EventType = "dbClickFile";
+      eachRoundData.ClickNoneFile = false;
+      eachRoundData.StartTime = moment().format("x");
+      eachRoundData.FileIndex = $(this).attr("id");
+      eachRoundData.DragPoint.y = event.pageY;
+      eachRoundData.DragPoint.x = event.pageX;
+      eachRoundData.FailClick.x = 0;
+      eachRoundData.FailClick.y = 0;
+      eachRoundData.Success = false; //紀錄成功與否
+      eachRoundData.EndTime = moment().format("x");
+      eachRoundData.Duration = eachRoundData.EndTime - eachRoundData.StartTime;
+      eachRoundData.DropPoint.y = event.pageY;
+      eachRoundData.DropPoint.x = event.pageX;
+      eachRoundData.TotalDuration = eachRoundData.EndTime - startExperimentTime - lostConnectionDuration;
+      var eachTemp = eachRoundData;
+      logRecord(eachTemp);
+      // $.post("./dragAndDropRecord", eachTemp, function(record) {
+      //   if (record.error) {
+      //     alert("System error!");
+      //   } else {
+      //     console.log(record);
+      //   }
+      // });
+      $("#popupcover").show();
+      $("#window-open").css({
+        zoom: "30%",
+        opacity: 0.5,
+        display: "block",
+        left: (event.pageX - 100) + "px",
+        top: (event.pageY - 100) + "px"
+      });
+      $("#window-open").animate({
+        zoom: "100%",
+        opacity: 1
+      }, 350, "easeOutQuart");
+    });
+    $("#window-open>span").click(function(event) {
+      event.stopPropagation();
+      event.preventDefault();
+      $("#window-open").hide();
+      $("#popupcover").hide();
+      dbClicking = false;
+    });
+    $("body").bind('mousemove', function(event) { //紀錄滑鼠移動
+      //event.preventDefault();
+      //if (!eachRoundData.clickNoneFile) {
+      if (collision(event.pageX, event.pageY, $("#target"))) {
+        $("#target").css("background", "rgba(150,150,150,0.6)");
+      } else {
+        $("#target").css("background", "rgba(0,0,0,0)");
+      }
+      //}
+    });
+    //onlistenConnection();
+    $("#change-side-btn").click(function(event) {
+      event.stopPropagation();
+      stopRecord = false;
+      $(".change-side-popup").fadeOut();
+    });
+    $(".change-side-popup").click(function(event) {
+      event.stopPropagation();
+    });
+    $(".finish-test-popup-container").click(function(event) {
+      event.stopPropagation();
+    });
+  }
+
+  //物件接觸判斷
+  function collision(xx, yy, $div2) {
+    var x1 = xx;
+    var y1 = yy;
+    var h1 = 1;
+    var w1 = 1;
+    var b1 = y1 + h1;
+    var r1 = x1 + w1;
+    var x2 = $div2.offset().left;
+    var y2 = $div2.offset().top;
+    var h2 = $div2.outerHeight(true);
+    var w2 = $div2.outerWidth(true);
+    var b2 = y2 + h2;
+    var r2 = x2 + w2;
+
+    if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) {
+      return false;
+    } else {
+      return true;
+    }
+
+  }
+
+  function collisionArea($div1, $div2) {
+    var x1 = $div1.offset().left;
+    var y1 = $div1.offset().top;
+    var h1 = $div1.outerHeight(true);
+    var w1 = $div1.outerWidth(true);
+    var b1 = y1 + h1;
+    var r1 = x1 + w1;
+    var x2 = $div2.offset().left;
+    var y2 = $div2.offset().top;
+    var h2 = $div2.outerHeight(true);
+    var w2 = $div2.outerWidth(true);
+    var b2 = y2 + h2;
+    var r2 = x2 + w2;
+
+    if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
+    return true;
+  }
+</script>
+<!--<div id="rounds"></div>-->
+<img src="./images/windows.png" id="window" />
+<div id="file1" class="file">
+  <img src="./images/folder.png" />
+  <span>File01</span>
+</div>
+<div id="file2" class="file">
+  <img src="./images/folder.png" />
+  <span>File02</span>
+</div>
+<div id="file3" class="file">
+  <img src="./images/folder.png" />
+  <span>File03</span>
+</div>
+<div id="file4" class="file">
+  <img src="./images/folder.png" />
+  <span>File04</span>
+</div>
+<div id="file5" class="file">
+  <img src="./images/folder.png" />
+  <span>File05</span>
+</div>
+<div id="file6" class="file">
+  <img src="./images/folder.png" />
+  <span>File06</span>
+</div>
+<div id="file7" class="file">
+  <img src="./images/folder.png" />
+  <span>File07</span></div>
+<div id="file8" class="file">
+  <img src="./images/folder.png" />
+  <span>File08</span></div>
+<div id="file9" class="file">
+  <img src="./images/folder.png" />
+  <span>File09</span></div>
+<div id="file10" class="file">
+  <img src="./images/folder.png" />
+  <span>File10</span></div>
+<div id="target">
+  <img src="./images/folder.png" />
+  <span>Target</span>
+</div>
+<div id="popupcover"></div>
+<div id="window-open">
+  <img src="./images/windows.png" />
+  <span></span>
+</div>
+<div class="change-side-popup">
+  <div class="wrapper">
+    <div class="content">Press OK to continue.</div>
+    <button id="change-side-btn" class="finish-btn btn btn-success">OK</button>
+  </div>
+</div>
+<div class="finish-test-popup-container">
+  <div class="finish-wrapper">
+    <div class="finish-content">
+      The task is done, please click the Finish button
+    </div>
+    <a id="finish-btn" class="finish-btn btn btn-success" href="./finishOneTest">Finish</a>
+  </div>
+</div>

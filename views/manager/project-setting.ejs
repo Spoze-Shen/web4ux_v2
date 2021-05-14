@@ -1,0 +1,391 @@
+<style type="text/css">
+  .test-group-container {
+    padding: 20px 50px;
+    position: relative;
+    display: none;
+  }
+
+  .test-selet-mask {
+    position: absolute;
+    top: 0px;
+    left: -10px;
+    width: 105%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #007DB8;
+    cursor: pointer;
+    display: none;
+  }
+
+  .test-selet-mask .select-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: #007DB8;
+    font-weight: 900;
+  }
+
+  .selected-number-container {
+    display: inline-block;
+    float: right;
+    position: relative;
+  }
+
+  .selected-number-container .selected-number {
+    font-size: 20px;
+    color: #007DB8;
+    font-weight: 900;
+  }
+
+  .reset-selection-btn {
+    opacity: 0;
+    transition-property: all;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+    transition-delay: 0s;
+    letter-spacing: 2px;
+    font-weight: 500;
+    cursor: pointer;
+    text-align: center;
+    border: 1.5px solid #c90;
+    width: fit-content;
+    padding: 5px 10px;
+    margin: 10px auto;
+    position: relative;
+  }
+
+
+  .test-title {
+    line-height: 38px;
+    font-weight: 500;
+  }
+
+  .test-description {
+    font-size: 14px;
+  }
+
+  .step-field-block {
+    padding: 20px;
+  }
+
+  .setting-group {
+    padding: 10px 0px;
+  }
+
+  .setting-group .setting-label {
+    min-width: 130px;
+    display: inline-block;
+    line-height: 26px;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .setting-group .setting-input {
+    width: 90px;
+    display: inline-block;
+    margin: 0px;
+  }
+
+  .confirm-test-group .icon-group {
+    margin-right: 10px;
+  }
+
+  .step-field-label {
+    display: block;
+    color: #313435;
+    letter-spacing: .5px;
+    font-weight: 400;
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+</style>
+<script type="text/javascript">
+  var indexText = ["1st", "2nd", "3rd"];
+
+  function ini() {
+    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="popover"]').popover();
+    $(".project-nav-link[data-nav='setting']").addClass("active");
+    $(".project-container input").prop("disabled", true);
+    for (var i = 0; i < project.TestUrl.length; i++) {
+      $(".test-group-container[data-url='" + project.TestUrl[i] + "']").show();
+      $(".test-group-container[data-url='" + project.TestUrl[i] + "']").find(".selected-number").html((i + 1));
+    };
+    for (var i = 0; i < project.TestName.length; i++) {
+      var group = $("<h4 />", {
+        class: "col-4 confirm-test-group"
+      }).appendTo(".project-test-order");
+      $("<span>", {
+        class: "badge badge-info icon-group",
+        text: indexText[i]
+      }).appendTo(group);
+      $("<span>", {
+        class: "",
+        text: project.TestName[i]
+      }).appendTo(group);
+      if (project.TestName[i] == "Winfitts") {
+        $("#fitts-setting-field-block").show();
+      }
+    };
+    $(".fitts-setting-container input[data-field=FittsRound]").val(project.FittsRound);
+    $(".fitts-setting-container input[data-field=FittsPracticeRound]").val(project.FittsPracticeRound);
+    $(".fitts-w").each(function(i) {
+      $(this).val(project.FittsW[i]);
+    });
+    $(".fitts-d").each(function(i) {
+      $(this).val(project.FittsD[i]);
+    });
+    $(".fitts-id").each(function(i) {
+      $(this).val(project.FittsID[i]);
+    });
+  }
+</script>
+<div class="project-container">
+  <div class="step-field-block">
+    <label class="step-field-label">Test Order</label>
+    <div class="row project-test-order">
+    </div>
+  </div>
+  <div class="step-field-block" id="fitts-setting-field-block" style="display:none;">
+    <div class="fitts-setting-container">
+      <label class="step-field-label">Winfitts Setting</label>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Number of trails</label>
+        <div class="col-sm-2">
+          <input type="text" class="form-control form-control-sm setting-input" data-field="FittsRound">
+        </div>
+        <div class="col-sm-1">
+          <button type="button" class="btn text-secondary icon-question" data-toggle="popover" data-trigger="hover" title="Number of trails" data-content="Please fill into the number of trails. Suggest the number must be in multiples of 6 because there are six direction in random for each index difficuties."></button>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-sm-3 col-form-label">Practice Trails</label>
+        <div class="col-sm-2">
+          <input type="text" class="form-control form-control-sm setting-input" data-field="FittsPracticeRound">
+        </div>
+        <div class="col-sm-1">
+          <button type="button" class="btn text-secondary icon-question" data-toggle="popover" data-trigger="hover" title="Practice Trails" data-content="Please fill into the number of trails. Suggest the number must be in multiples of 6 because there are six direction in random for each index difficuties."></button>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="step-field-label">
+        Please assign the Width and the Distance below. Then click the “Calculate ID” button to get the Index of Difficulty. Please note that the maximum distance is 150 to avoid display
+        <button id="formula-tips" type="button" class="btn text-secondary icon-question" data-html="true" data-trigger="hover" data-toggle="popover" title="Practice Trails" data-content="<p>ID = log2 ( ( D / W ) + 1 )</p><p>ID stands for Index of Difficulty.</p><p>W stands for the width of the target circle.</p><p>D stands for the distance between the target and the start circle.</p>"></button>
+      </label>
+        <div class="form-group row id-setting-group">
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Width1">Width</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" aria-label="Width" aria-describedby="Width1">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Distance1">Distance</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" aria-label="Distance" aria-describedby="Distance1">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="ID1">ID</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" aria-label="ID" aria-describedby="ID1" readonly>
+          </div>
+        </div>
+        <div class="form-group row id-setting-group">
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Width2">Width</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" aria-label="Width" aria-describedby="Width2">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Distance2">Distance</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" aria-label="Distance" aria-describedby="Distance2">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="ID2">ID</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" aria-label="ID" aria-describedby="ID2" readonly>
+          </div>
+        </div>
+        <div class="form-group row id-setting-group">
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Width3">Width</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" aria-label="Width" aria-describedby="Width3">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Distance3">Distance</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" aria-label="Distance" aria-describedby="Distance3">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="ID3">ID</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" aria-label="ID" aria-describedby="ID3" readonly>
+          </div>
+        </div>
+        <div class="form-group row id-setting-group">
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Width4">Width</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" aria-label="Width" aria-describedby="Width4">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="Distance4">Distance</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" aria-label="Distance" aria-describedby="Distance4">
+          </div>
+          <div class="col-3 input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="ID4">ID</span>
+            </div>
+            <input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" aria-label="ID" aria-describedby="ID4" readonly>
+          </div>
+        </div>
+        <!-- <button class="icon-calculator btn btn-icon btn-outline-info" id="caculate-id-btn">Calculate ID</button> -->
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- <div class="test-group-container" data-url="./Test-Fitts-Home" data-name="Fitts">
+    <div class="test-title">
+      Fitts Law
+      <div class="selected-number-container">
+        <div class="selected-number"></div>
+      </div>
+    </div>
+    <div class="test-description">During this test, the average travel time of cursor movement under assigned index of difficulty (ID) would be caculateted.</div>
+    <div class="fitts-setting-container">
+      <div class="setting-group">
+        <label class="setting-label">Trails</label>
+        <input type="text" class="setting-input new-project-input" data-field="FittsRound" value="12">
+        <div class="note">
+          Note : the number set in 6 times would be great.
+          <div class="tip-container">
+            <div class="tip-icon">
+              <i class="fa fa-question" aria-hidden="true"></i>
+            </div>
+            <div class="tip-content">
+              During this test, the average travel time of cursor movement under assigned index of difficulty (ID) would be caculateted.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">Practice Trails</label>
+        <input type="text" class="setting-input new-project-input" data-field="FittsPracticeRound" value="6">
+      </div>
+      <div class="setting-group">
+        <label class="setting-label">
+					Please assign the Width and the Distance below.
+					<div class="tip-container">
+						<div class="tip-icon">
+							<i class="fa fa-question" aria-hidden="true"></i>
+						</div>
+						<div class="tip-content">
+							During this test, the average travel time of cursor movement under assigned index of difficulty (ID) would be caculateted.
+						</div>
+					</div>
+				</label>
+        <div class="id-setting-group">
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Width</label>
+            <input type="text" class="id-setting-input fitts-w" id="" placeholder="W" value="3">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Distance</label>
+            <input type="text" class="id-setting-input fitts-d" id="" placeholder="D" value="150">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">ID</label>
+            <input type="text" class="id-setting-input fitts-id" id="" placeholder="ID" value="5.7" readonly>
+          </div>
+        </div>
+        <div class="id-setting-group">
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Width</label>
+            <input type="text" class="id-setting-input fitts-w" id="" placeholder="W" value="15">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Distance</label>
+            <input type="text" class="id-setting-input fitts-d" id="" placeholder="D" value="150">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">ID</label>
+            <input type="text" class="id-setting-input fitts-id" id="" placeholder="ID" value="3.5" readonly>
+          </div>
+        </div>
+        <div class="id-setting-group">
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Width</label>
+            <input type="text" class="id-setting-input fitts-w" id="" placeholder="W" value="3">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Distance</label>
+            <input type="text" class="id-setting-input fitts-d" id="" placeholder="D" value="30">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">ID</label>
+            <input type="text" class="id-setting-input fitts-id" id="" placeholder="ID" value="3.5" readonly>
+          </div>
+        </div>
+        <div class="id-setting-group">
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Width</label>
+            <input type="text" class="id-setting-input fitts-w" id="" placeholder="W" value="15">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">Distance</label>
+            <input type="text" class="id-setting-input fitts-d" id="" placeholder="D" value="30">
+          </div>
+          <div class="id-setting-input-group">
+            <label class="id-setting-input-label">ID</label>
+            <input type="text" class="id-setting-input fitts-id" id="" placeholder="ID" value="1.6" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="test-selet-mask">
+      <div class="select-number"></div>
+    </div>
+  </div>
+  <div class="test-group-container" data-url="./Test-DragAndDrop" data-name="DragAndDrop">
+    <div class="test-title">Drag and Drop
+      <div class="selected-number-container">
+        <div class="selected-number"></div>
+      </div>
+    </div>
+    <div class="test-description">Participants will drag and drop the file icon into target zone. The numbers of errors, such as dropping the file in the middle, opening the file, are recorded.</div>
+    <div class="test-selet-mask">
+      <div class="select-number"></div>
+    </div>
+  </div>
+  <div class="test-group-container" data-url="./Test-Typing" data-name="Typing">
+    <div class="test-title">Typing Test
+      <div class="selected-number-container">
+        <div class="selected-number"></div>
+      </div>
+    </div>
+    <div class="test-description">The number of cursor movement and clicks are recorded while the participant is typing.</div>
+    <div class="test-selet-mask">
+      <div class="select-number"></div>
+    </div>
+  </div>
+</div>-->
+</div>

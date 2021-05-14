@@ -1,0 +1,122 @@
+<style type="text/css">
+#no-data-alert {
+    text-align: -webkit-center;
+    color: #FFF;
+    font-size: 20px;
+    background: firebrick;
+    border: 0px;
+    border-radius: 3px;
+    padding: 12px;
+    margin-bottom: 10px;
+    display: none;
+}
+
+#subjects-table-container {}
+
+
+.table {
+    font-size: 12px;
+}
+
+.table>thead {
+    background: grey !important;
+    border-color: #FFF;
+    color: #FFF;
+}
+
+.table>tbody * {
+    border-color: #FFF;
+    background: #EEE;
+}
+.table td{
+    padding: 0px !important;
+}
+.table thead td{
+    color: #FFF;
+    padding: 5px 5px !important;
+    white-space: nowrap;
+}
+.table tbody td{
+    padding: 5px !important;
+}
+.table-title {
+    padding: 10px 5px;
+    font-size: 14px;
+    font-weight: 900;
+    color: #333;
+}
+
+.typing-content-td {
+    max-width: 150px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+</style>
+<script type="text/javascript">
+function getData() {
+    $.get("./typingLogData", {
+        project: project.id
+    }).done(function(data) {
+        if (data.error) {
+            alert("System error : " + data.error);
+        } else if (data.length == 0) {
+            $("#no-data-alert").show();
+        } else {
+            $.each(data, function(index, log) {
+                var startTime = parseInt(log.EventStartTime),
+                    endTime = parseInt(log.EventEndTime);
+                var eventDuration = (log.EventDuration) ? ("<td>" + log.EventDuration + "</td>") : ("<td>0</td>");
+                $("<tr>" +
+                    "<td>" + log.Subject.Name + "</td>" +
+                    "<td>" + log.ProjectDevice.ModelName + " " + log.ProjectDevice.DeviceName + "</td>" +
+                    "<td>" + log.EventType + "</td>" +
+                    "<td>" + moment(startTime).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S") + "</td>" +
+                    "<td>" + moment(endTime).subtract(2, 'hours').format("YYYY-MM-DD HH:mm:ss.S") + "</td>" +
+                    "<td class='typing-content-td'>" + log.TypingContent + "</td>" +
+                    "<td>( " + log.EventStartPosition.x + ", " + log.EventStartPosition.y + " )</td>" +
+                    "<td>( " + log.EventEndPosition.x + ", " + log.EventEndPosition.y + " )</td>" +
+                    eventDuration +
+                    "</tr>").appendTo("#log-table>tbody");
+            });
+        }
+    });
+}
+
+function ini() {
+    $(".project-nav-link[data-nav='typing-raw']").addClass("active");
+    getData();
+    $("#copyLogTable").click(function(e) {
+        e.preventDefault();
+        selectElementContents($(this).attr("data-source"));
+        alert("Data copied!");
+    });
+}
+
+</script>
+<div class="project-container">
+  <div class="tab-btn-container">
+    <button data-source="log-table" id="copyLogTable" class="icon-docs btn btn-icon btn-outline-primary">Copy Log Data</button>
+  </div>
+    <div id="no-data-alert">There is no data in this project!!!</div>
+    <div id="subjects-table-container">
+
+        <table class="table" id="log-table">
+            <thead>
+                <tr>
+                    <td>Participants</td>
+                    <td>Model</td>
+                    <td>Event Type</td>
+                    <td>Event Start Time</td>
+                    <td>Event End Time</td>
+                    <td class="typing-content-td">Content</td>
+                    <td>Event Start Position</td>
+                    <td>Event End Position</td>
+                    <td>Duration of mouse move(ms)</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

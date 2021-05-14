@@ -1,0 +1,1256 @@
+<style type="text/css">
+	#project-name-input {}
+
+	#device-name-input {}
+
+	#add-device-group {}
+
+	#add-device-btn {}
+
+	#added-device-list {}
+
+	.added-devices-group {
+		line-height: 38px;
+	}
+
+	.added-devices-group .model-name {
+		text-align: center;
+	}
+
+	.added-devices-group .device-name {}
+
+	.added-devices-group .remove-device-btn {
+		letter-spacing: 1px;
+		border: none;
+		background: none;
+		line-height: 26px;
+	}
+
+	.step-process-container {
+		text-align: center;
+		padding: 20px 0px;
+		background: #FFF;
+		width: 80%;
+		display: block;
+		margin: 5px auto;
+		border: 1px solid rgba(0, 0, 0, .0625);
+	}
+
+	.step-process-group {
+		display: inline-block;
+		opacity: 0.5;
+	}
+
+	.step-process-group.active {
+		opacity: 1;
+	}
+
+	.step-icon-group {
+		display: inline-block;
+		background: #2E393F;
+		color: #FFF;
+		border-radius: 50px;
+		font-size: 14px;
+		line-height: 26px;
+		width: 26px;
+		text-align: -webkit-center;
+	}
+
+	.step-title {
+		display: inline-block;
+		letter-spacing: .5px;
+		margin-left: 5px;
+		margin-right: 20px;
+	}
+
+	.step-container {
+		text-align: center;
+		width: 80%;
+		margin: 0px auto;
+	}
+
+	.step-container .step-content {
+		text-align: left;
+		margin: 0px auto;
+	}
+
+	.step-container .step-head {}
+
+	.step-container .step-body {}
+
+	.step-container .step-field-block {
+		background: #FFF;
+		border: 1px solid rgba(0, 0, 0, .0625);
+		margin: 5px auto;
+		padding: 20px 20px;
+	}
+
+	.step-container .step-body .step-field-label {
+		display: block;
+		color: #313435;
+		letter-spacing: .5px;
+		font-weight: 900;
+		font-size: 16px;
+		margin-bottom: 25px;
+	}
+
+	.step-container .step-func-container {}
+
+	.border-btn.cancel-step-btn {}
+
+	.border-btn.next-step-btn {}
+
+	.warnning-alert {
+		font-size: 16px;
+		color: #999;
+		font-weight: 300;
+		font-style: italic;
+		letter-spacing: 1px;
+	}
+
+	.test-group-container {
+		position: relative;
+	}
+
+	.remove-test-btn,
+	.check-test-btn {
+		border: none;
+		font-size: 24px;
+		display: inline-block;
+		position: absolute;
+		right: 6px;
+		top: 10px;
+		cursor: pointer;
+		color: #999;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		background: none;
+	}
+
+	.check-test-btn:hover,
+	.remove-test-btn:hover {
+		color: #333;
+	}
+
+	.sort-test-btn-group {}
+
+	.test-group-container .card-footer {}
+
+	.test-order-card {
+		opacity: 0.5;
+	}
+
+	.test-order-card.active {
+		opacity: 1;
+	}
+
+	/* .test-selet-mask {
+		position: absolute;
+		top: 0px;
+		left: -10px;
+		width: 105%;
+		height: 100%;
+		background: rgba(255, 255, 255, 0.8);
+		border: 1px solid #007DB8;
+		cursor: pointer;
+		display: none;
+	}
+
+	.test-selet-mask .select-number {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		font-size: 30px;
+		color: #007DB8;
+		font-weight: 900;
+	}
+
+	.selected-number-container {
+		display: inline-block;
+		float: right;
+		position: relative;
+	}
+
+	.selected-number-container .selected-number {
+		font-size: 20px;
+		color: #007DB8;
+		font-weight: 900;
+	}
+
+	.reset-selection-btn {
+		opacity: 0;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		letter-spacing: 2px;
+		font-weight: 500;
+		cursor: pointer;
+		text-align: center;
+		border: 1.5px solid #c90;
+		width: fit-content;
+		padding: 5px 10px;
+		margin: 10px auto;
+		position: relative;
+	}
+
+
+	.test-title {
+		line-height: 38px;
+		font-weight: 500;
+	}
+
+	.test-description {
+		font-size: 14px;
+	} */
+
+	.fitts-setting-container {
+		padding: 20px 0px;
+	}
+
+	.fitts-setting-container .setting-title {
+		color: #999;
+		font-size: 16px;
+	}
+
+	.setting-group {
+		/* padding: 10px 0px; */
+	}
+
+	.setting-group .setting-label {
+		/* min-width: 130px;
+		display: inline-block;
+		line-height: 26px;
+		color: #333;
+		font-size: 16px;
+		font-weight: 500; */
+	}
+
+	.setting-group .setting-input {
+		/* width: 90px;
+		display: inline-block;
+		margin: 0px; */
+	}
+
+	.id-setting-group {}
+
+	.id-setting-group .id-setting-input-group {
+		/* display: inline-block;
+		padding: 10px 10px; */
+	}
+
+	.id-setting-group .id-setting-input-group .id-setting-input-label {
+		/* font-size: 14px; */
+	}
+
+	.id-setting-group .id-setting-input-group .id-setting-input {
+		/* width: 80px; */
+	}
+
+	.note {
+		font-size: 12px;
+		display: inline-block;
+	}
+
+	.tip-container {
+		display: inline-block;
+		overflow: hidden;
+	}
+
+	.tip-container .tip-icon {
+		padding: 0px 5px;
+		border: 1.5px solid #C70;
+		border-radius: 50px;
+		line-height: 19px;
+	}
+
+	.tip-icon:hover+.tip-content {
+		opacity: 1;
+		z-index: 999;
+	}
+
+	.tip-container .fa {
+		color: #C70;
+	}
+
+	.tip-container .tip-content {
+		position: absolute;
+		background: #FFF;
+		border: 1px solid #C70;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		opacity: 0;
+		transform: translateY(5%);
+		padding: 12px;
+		font-size: 12px;
+		letter-spacing: 1px;
+		width: 290px;
+		line-height: 18px;
+		z-index: -1;
+	}
+
+
+	.add-editor-container {
+		padding: 20px 0px;
+	}
+
+	#manager-select {
+		line-height: 29px;
+		padding-left: 10px;
+		margin: 10px 0px;
+		border: 1px solid #AAA;
+		transition-property: all;
+		transition-duration: 0.5s;
+		transition-timing-function: ease-in-out;
+		transition-delay: 0s;
+		min-width: 60%;
+		background: none;
+		border-radius: 0px;
+		-webkit-appearance: none;
+		max-height: 200px;
+		overflow-y: auto;
+	}
+
+	#add-manager-btn {}
+
+	.project-permission-radio-group {}
+
+	.permission-radio {}
+
+	.permission-radio .fa-check {}
+
+	.permission-radio .text {}
+
+	.manager-select-group {
+		position: relative;
+	}
+
+	.manager-select-group .cover {
+		position: absolute;
+		background: rgb(250, 250, 250);
+		width: 100%;
+		height: 100%;
+		top: 0px;
+		left: 0px;
+		opacity: 0.5;
+	}
+
+	.manager-added-group {}
+
+	.manager-added-container {
+		padding: 20px 10px;
+		border-bottom: 1px solid #DDD;
+	}
+
+	#add-manager-option-group {}
+
+	#select-all-manager-btn {
+		color: #007DB8;
+		border: none;
+		background: none;
+	}
+
+	#project-creat-loading {
+		position: fixed;
+		top: 0px;
+		left: 0px;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(100, 100, 100, 0.9);
+		display: none;
+		z-index: 999;
+	}
+
+	#project-creat-loading .content {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		text-align: center;
+		background: #FFF;
+		padding: 20px;
+	}
+
+	#project-creat-loading .status {
+		font-size: 20px;
+		font-weight: 500;
+		line-height: 80px;
+	}
+
+	#project-creat-loading .note {
+		line-height: 30px;
+		margin-bottom: 30px;
+		font-size: 18px;
+	}
+
+	#project-creat-loading .link-container {
+		display: none;
+	}
+
+	#project-creat-loading .link-container a {
+		text-decoration: none;
+		margin-right: 20px;
+		color: #337ab7;
+		border: 1px solid #337ab7;
+		padding: 8px 15px;
+	}
+
+	.error-label {
+		display: none;
+		color: #930;
+		font-weight: normal;
+		font-size: medium;
+		margin: 15px 0px;
+	}
+
+	.error-label .fa {
+		color: #930;
+		margin: 0px 10px;
+	}
+
+	#confirm-project-container {
+		padding-bottom: 20px;
+	}
+
+	#confirm-project-container .project-name {
+		font-weight: 500;
+	}
+
+	.confirm-test-group {}
+
+	.confirm-test-group .icon-group {
+		margin-right: 10px;
+	}
+
+	.confirm-test-group .icon-title {}
+
+	#add-more-device-btn {}
+	#confirm-project-name:hover{
+		border: solid transparent !important;
+    border-width: 1px 0 !important;
+	}
+
+	/*END OF RADIO*/
+</style>
+<script type="text/javascript">
+	var deviceChar = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
+	var indexText = ["1st", "2nd", "3rd"];
+
+	function resetTestCard() {
+		$(".test-order-card.active .sort-test-btn-group").html("");
+		$(".test-order-card.active").each(function(index) {
+			$("<button />", {
+				type: "button",
+				class: "btn btn-outline-success",
+				"data-value": "" + (index + 1),
+				text: indexText[index]
+			}).appendTo(".test-order-card.active .sort-test-btn-group").click(function() {
+				var test = $(this).parent().attr("data-test"),
+					value = $(this).attr("data-value");
+				$(".card-footer[data-value=" + value + "]").html("#");
+				$(".card-footer[data-value=" + value + "]").attr("data-value", "#");
+				$(this).parent().find("button").removeClass("active");
+				$(".sort-test-btn-group button[data-value=" + value + "]").removeClass("active");
+				$(".card-footer[data-name='" + test + "']").html(indexText[parseInt(value) - 1]);
+				$(".card-footer[data-name='" + test + "']").attr("data-value", value);
+				$(this).addClass("active");
+			});
+		});
+		$(".sort-test-btn-group button").removeClass("active");
+		$(".card-footer").html("#");
+		$(".card-footer").attr("data-value", "#");
+	}
+
+	function resetDevicesName() {
+
+		if ($(".added-devices-group").length == 0) {
+			$("#no-device-alert").show();
+		} else {
+			$("#no-device-alert").hide();
+			$(".added-devices-group .model-name").each(function(i) {
+				$(this).html(deviceChar[i] + " - ");
+				$(this).attr("data-value", deviceChar[i]);
+				// var deviceName = $(this).attr("data-device");
+				// $(this).attr("data-value", deviceChar[i]);
+				// $("<span />", {
+				// 	class: "model-name",
+				// 	text: "Model " + deviceChar[i],
+				// 	"data-value": "Model " + deviceChar[i]
+				// }).appendTo(this);
+				// $("<span />", {
+				// 	class: "device-name",
+				// 	text: deviceName,
+				// 	"data-value": deviceName
+				// }).appendTo(this);
+				// $("<button />", {
+				// 	class: "remove-device-btn",
+				// 	text: "Remove"
+				// }).prepend("<span class='glyphicon glyphicon-remove'>").appendTo(this).click(function() {
+				// 	$(this).parent().remove();
+				// 	resetDevicesName();
+				// });
+			});
+		}
+
+	}
+	var testIndexOnSelect = 1;
+	var newProject = {
+		Name: "",
+		Creator: "",
+		Editor: [],
+		CreaterEditorOnly: false,
+		TestUrl: [],
+		TestName: [],
+		FittsW: [],
+		FittsD: [],
+		FittsID: []
+	};
+	var needCalculate = false;
+	function ini() {
+		$('[data-toggle="tooltip"]').tooltip();
+		$('[data-toggle="popover"]').popover();
+		$("#project-name-input").click(function() {
+			if ($("#project-name-input").val() == "New Project") {
+				$("#project-name-input").val("");
+			}
+		});
+		$('#create-project-modal').modal({
+			show: false,
+			backdrop: "static"
+		});
+		newProject.Creator = manager.id;
+		/*Setup manager list*/
+		$.get("/listManager", {
+			Alive: true
+		}).done(function(list) {
+			$.fpLoaded();
+			$.each(list, function(i, obj) {
+				if (obj.id != manager.id) {
+					var group = $("<div />", {
+						id: "add-manager-option-group",
+						class: "radio-group",
+						"data-value": obj.id
+					}).appendTo("#manager-select").click(function() {
+						if ($(this).hasClass("active")) {
+							$(this).removeClass("active");
+						} else {
+							$(this).addClass("active");
+						}
+					});
+					$("<i />", {
+						class: "fa fa-check"
+					}).appendTo(group);
+					$("<span />", {
+						class: "text",
+						text: obj.Name,
+						"data-value": obj.id
+					}).appendTo(group);
+				}
+
+			});
+		});
+
+		$("#add-more-device-btn").click(function() {
+			var group = $("<div />", {
+				class: "form-group row added-devices-group"
+			}).appendTo("#added-device-list");
+			$("<label />", {
+				class: "col-sm-1 col-form-label model-name",
+				"data-value": deviceChar[$(".added-devices-group").length - 1],
+				text: deviceChar[$(".added-devices-group").length - 1] + " - "
+			}).appendTo(group);
+			var col = $("<div />", {
+				class: "col-sm-5"
+			}).appendTo(group);
+			$("<input />", {
+				class: "form-control form-control-sm device-name",
+				type: "text",
+				placeholder: "Device Name"
+			}).appendTo(col);
+			var colRemove = $("<div />", {
+				class: "col-sm-1"
+			}).appendTo(group);
+			$("<span />", {
+				class: "icon-close remove-device-btn"
+			}).appendTo(colRemove).click(function() {
+				$(this).parent().parent().remove();
+				resetDevicesName();
+			});
+		});
+		$(".added-devices-group .remove-device-btn").click(function() {
+			$(this).parent().parent().remove();
+			resetDevicesName();
+		});
+		// $("#add-device-btn").click(function() {
+		// 	var deviceName = $("#device-name-input").val();
+		// 	if (deviceName == "" || deviceName == " ") {
+		// 		return false;
+		// 	} else {
+		// 		var group = $("<div />", {
+		// 			class: "added-devices-group",
+		// 			"data-device": deviceName
+		// 		}).appendTo("#added-device-list");
+		// 		resetDevicesName();
+		// 	}
+		// });
+		$("#goto-step-two-btn").click(function() {
+			var deviceError = false;
+			$("#name-empty-error-label").hide();
+			$("#device-empty-error-label").hide();
+			$("#info-empty-error-label").hide();
+			$(".added-devices-group").each(function(i) {
+				if ($(this).find(".device-name").val() == "" && i != $(".added-devices-group").length - 1) {
+					deviceError = true;
+					return false;
+				}
+			});
+			if ($("#project-name-input").val() == "") {
+				$("#name-empty-error-label").show();
+				$("#info-empty-error-label").show();
+				return false;
+			} else if (deviceError) {
+				$("#device-empty-error-label").show();
+				$("#info-empty-error-label").show();
+				return false;
+
+			} else {
+				$(".step-process-group[data-step=2]").addClass("active");
+				$(".step-container[data-step=1]").fadeOut(function() {
+					$(".step-container[data-step=2]").fadeIn();
+				});
+			}
+
+		});
+		$("#backto-step-one-btn").click(function() {
+			$(".step-process-group[data-step=2]").removeClass("active");
+			$(".step-container[data-step=2]").fadeOut(function() {
+				$(".step-container[data-step=1]").fadeIn();
+			});
+		});
+
+		$("#goto-step-three-btn").click(function() {
+			$("#test-selection-error-label").hide();
+			newProject.TestUrl.splice(0, newProject.TestUrl.length);
+			newProject.TestName.splice(0, newProject.TestName.length);
+			var testLength = $(".test-order-card.active").length;
+			var activeSort = $(".sort-test-btn-group .btn-outline-success.active").length;
+			var error = false;
+			if (testLength != activeSort) {
+				error = true;
+			}
+
+			// $(".test-order-card.active .card-footer").each(function() {
+			//
+			// });
+			if (error) {
+				$("#test-selection-error-label").show();
+				return false;
+			} else {
+				for (var i = 1; i < testLength + 1; i++) {
+					// if ($(".test-order-card.active .card-footer[data-value=" + i + "]").attr("data-value") == "#") {
+					// 	error = true;
+					// 	break;
+					// } else {
+					newProject.TestUrl.push($(".test-order-card.active .card-footer[data-value=" + i + "]").attr("data-url"));
+					newProject.TestName.push($(".test-order-card.active .card-footer[data-value=" + i + "]").attr("data-name"));
+					//}
+				}
+				//#confirm-project-container .project-name .project-test-order
+				$("#confirm-project-container .project-name").val($("#project-name-input").val());
+				$("#fitts-setting-field-block").hide();
+				$("#confirm-project-container .project-test-order").html("");
+				for (var i = 0; i < newProject.TestName.length; i++) {
+					var group = $("<h4 />", {
+						class: "col-4 confirm-test-group"
+					}).appendTo("#confirm-project-container .project-test-order");
+					$("<span>", {
+						class: "badge badge-info icon-group",
+						text: indexText[i]
+					}).appendTo(group);
+					$("<span>", {
+						class: "",
+						text: newProject.TestName[i]
+					}).appendTo(group);
+					if (newProject.TestName[i] == "Winfitts") {
+						$("#fitts-setting-field-block").show();
+					}
+				}
+				$(".step-process-group[data-step=3]").addClass("active");
+				$(".step-container[data-step=2]").fadeOut(function() {
+					$(".step-container[data-step=3]").fadeIn();
+				});
+			}
+		});
+		$("#backto-step-two-btn").click(function() {
+			$(".step-process-group[data-step=3]").removeClass("active");
+			$(".step-container[data-step=3]").fadeOut(function() {
+				$(".step-container[data-step=2]").fadeIn();
+			});
+		});
+		// $(".test-group-container").mouseenter(function(event) {
+		//
+		// 	/* Act on the event */
+		// 	if (!$(this).hasClass("selected")) {
+		//
+		// 		$(this).find(".test-selet-mask").fadeIn();
+		// 		$(this).find(".select-number").html(indexText[testIndexOnSelect]);
+		// 	}
+		// }).mouseleave(function(event) {
+		// 	/* Act on the event */
+		// 	$(this).find(".test-selet-mask").fadeOut();
+		// }).click(function() {
+		// 	if (!$(this).hasClass("selected")) {
+		// 		$(this).addClass("selected");
+		// 		$(this).attr("data-index", testIndexOnSelect);
+		// 		$(this).find(".selected-number").html(testIndexOnSelect);
+		// 		$(this).find(".test-selet-mask").fadeOut();
+		// 		$(this).find(".selected-number-container").fadeIn();
+		// 		testIndexOnSelect += 1;
+		// 		$(".reset-selection-btn").css("opacity", 1);
+		// 		newProject.TestUrl.push($(this).attr("data-url"));
+		// 		newProject.TestName.push($(this).attr("data-name"));
+		// 	}
+		// });
+		// $(".reset-selection-btn").click(function() {
+		// 	$(".test-group-container.selected").each(function() {
+		// 		$(this).removeClass("selected");
+		// 		$(this).find(".selected-number-container").fadeOut();
+		// 		$(this).attr("data-index", 0);
+		// 	});
+		// 	testIndexOnSelect = 1;
+		// 	newProject.TestUrl.splice(0, newProject.TestUrl.length);
+		// 	newProject.TestName.splice(0, newProject.TestName.length);
+		// });
+		$(".fitts-w, .fitts-d").keypress(function() {
+			needCalculate = true;
+			$("#create-project-btn").prop( "disabled", true );
+			$("#need-calculate-alert").show();
+		});
+		$("#create-project-btn").click(function() {
+			$("#loader").removeClass(".fadeOut");
+			$("#project-creat-loading").fadeIn();
+			if (newProject.TestUrl.length == 0) {
+
+			} else {
+				$(".new-project-input").each(function(i) {
+					var key = $(this).attr("data-field"),
+						value = $(this).val();
+					newProject[key] = value;
+				});
+				newProject.FittsW.splice(0, newProject.FittsW.length);
+				$(".fitts-w").each(function(i) {
+					newProject.FittsW.push(parseFloat($(this).val()));
+				});
+				newProject.FittsD.splice(0, newProject.FittsD.length);
+				$(".fitts-d").each(function(i) {
+					newProject.FittsD.push(parseFloat($(this).val()));
+				});
+				newProject.FittsID.splice(0, newProject.FittsID.length);
+				$(".fitts-id").each(function(i) {
+					newProject.FittsID.push(parseFloat($(this).val()));
+				});
+				var devices = [];
+				$(".added-devices-group").each(function(i) {
+					if ($(this).find(".device-name").val() != "") {
+						var device = {
+							ModelName: $(this).find(".model-name").attr("data-value"),
+							DeviceName: $(this).find(".device-name").val()
+						};
+						devices.push(device);
+					}
+				});
+				newProject.Editor.splice(0, newProject.Editor.length);
+				$("#manager-select .radio-group.active").each(function() {
+					var value = $(this).attr("data-value");
+					console.log(value);
+					newProject.Editor.push(value);
+				});
+
+				// console.log(newProject);
+				// console.log(devices);
+				$.post("/createProject", {
+					Project: newProject,
+					Device: devices
+				}).done(function(data) {
+					console.log(data);
+					$("#project-page-link").attr("href", "/project-devices?id=" + data.id);
+					$("#loader").addClass(".fadeOut");
+					$('#create-project-modal').modal('toggle');
+				});
+			}
+		});
+		$("#select-all-manager-btn").click(function() {
+			if ($(this).hasClass("selected")) {
+				$("#manager-select .radio-group").removeClass("active");
+				$(this).removeClass("selected");
+				$(this).html("Select");
+			} else {
+				$("#manager-select .radio-group").addClass("active");
+				$(this).addClass("selected");
+				$(this).html("Unselect");
+			}
+		});
+		$(".permission-radio").click(function() {
+			if ($("#everyone-permission").hasClass("active")) {
+				$("#everyone-permission").removeClass("active");
+				$("#onlyme-permission").addClass("active");
+				$(".manager-select-group .cover").hide();
+				newProject.CreaterEditorOnly = true;
+			} else {
+				$("#onlyme-permission").removeClass("active");
+				$("#everyone-permission").addClass("active");
+				$("#manager-select .radio-group").removeClass("active");
+				$(this).removeClass("selected");
+				$(".manager-select-group .cover").show();
+				newProject.CreaterEditorOnly = false;
+			}
+		});
+		$("#caculate-id-btn").click(function() {
+			$(".fitts-d").each(function(index) {
+				calculateId(index);
+				needCalculate = false;
+				$("#create-project-btn").prop( "disabled", false );
+				$("#need-calculate-alert").hide();
+			});
+		});
+		$(".test-order-card .remove-test-btn").click(function() {
+			$(this).parent().removeClass("active");
+			$(this).parent().find(".check-test-btn").show();
+			$(this).parent().find(".sort-test-btn-group").hide();
+			$(this).hide();
+			resetTestCard();
+		});
+		$(".test-order-card .check-test-btn").click(function() {
+			$(this).parent().addClass("active");
+			$(this).parent().find(".remove-test-btn").show();
+			$(this).parent().find(".sort-test-btn-group").show();
+			$(this).hide();
+			resetTestCard();
+		});
+		$(".sort-test-btn-group button").click(function() {
+			var test = $(this).parent().attr("data-test"),
+				value = $(this).attr("data-value");
+			$(".card-footer[data-value=" + value + "]").html("#");
+			$(".card-footer[data-value=" + value + "]").attr("data-value", "#");
+			$(this).parent().find("button").removeClass("active");
+			$(".sort-test-btn-group button[data-value=" + value + "]").removeClass("active");
+			$(".card-footer[data-name='" + test + "']").html(indexText[parseInt(value) - 1]);
+			$(".card-footer[data-name='" + test + "']").attr("data-value", value);
+			$(this).addClass("active");
+		});
+	}
+
+	function calculateId(iIndex) {
+		var W = parseFloat($(".fitts-w").eq(iIndex).val()),
+			D = parseFloat($(".fitts-d").eq(iIndex).val());
+		var newID = (D / W) + 1;
+		$(".fitts-id").eq(iIndex).val(parseFloat((Math.log2(newID)).toFixed(1)));
+	}
+</script>
+<div class="page-container">
+	<div class="step-process-container">
+		<div class="step-process-group active" data-step="1">
+			<div class="step-icon-group">1</div>
+			<h6 class="step-title">Project Basic Settings</h6>
+		</div>
+		<div class="step-process-group" data-step="2">
+			<div class="step-icon-group">2</div>
+			<h6 class="step-title">Select tasks and orders</h6>
+		</div>
+		<div class="step-process-group" data-step="3">
+			<div class="step-icon-group">3</div>
+			<h6 class="step-title">Confirm project</h6>
+		</div>
+	</div>
+	<div class="step-container" data-step="1">
+		<div class="step-content">
+			<!-- <h4 class="step-head">
+				Please give this progrect a name and add all the testing units in below list
+				<div class="step-icon-group">1</div>
+				<div class="step-title">Please give this project a name, and set up devices.</div>
+			</h4> -->
+			<div class="step-body">
+				<div class="step-field-block">
+					<label class="step-field-label">Please give this progrect a name</label>
+					<div class="error-label alert alert-danger" id="name-empty-error-label" role="alert">
+						<i class="fa fa-exclamation-circle" aria-hidden="true"></i>Name shouldn't be empty!
+					</div>
+					<div class="form-group row">
+						<!-- <label for="project-name-input" class="col-sm-2 col-form-label">Project Name</label> -->
+						<div class="col-sm-6">
+							<input type="text" class="form-control form-control-sm new-project-input" id="project-name-input" placeholder="Project Name" value="New Project" data-field="Name">
+						</div>
+						<!-- <label class="error-label" id="name-empty-error-label"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>Name shouldn't be empty!</label> -->
+					</div>
+
+				</div>
+				<div class="step-field-block">
+					<label class="step-field-label">Provide all testing units for this study</label>
+					<div id="device-empty-error-label" class="error-label alert alert-danger" id="name-empty-error-label" role="alert">
+						<i class="fa fa-exclamation-circle" aria-hidden="true"></i>Unit list can't be empty, and please check your units' order again.
+					</div>
+					<!-- <div id="add-device-group">
+					<input type="text" id="device-name-input" placeholder="Device Name">
+					<button id="add-device-btn" class="border-btn">Add Device</button>
+				</div> -->
+					<div id="added-device-list">
+						<!-- <div id="no-device-alert" class="warnning-alert">Device list is empty.</div> -->
+						<div class="form-group row added-devices-group">
+							<label class="col-sm-1 col-form-label model-name" data-value="A">A - </label>
+							<div class="col-sm-5">
+								<input class="form-control form-control-sm device-name" type="text" placeholder="Device Name">
+							</div>
+							<div class="col-sm-1">
+								<span class="icon-close remove-device-btn"></span>
+							</div>
+						</div>
+						<div class="form-group row added-devices-group">
+							<label class="col-sm-1 col-form-label model-name" data-value="B">B - </label>
+							<div class="col-sm-5">
+								<input class="form-control form-control-sm device-name" type="text" placeholder="Device Name">
+							</div>
+							<div class="col-sm-1">
+								<span class="icon-close remove-device-btn"></span>
+							</div>
+						</div>
+						<!-- <div class="added-devices-group">
+						<label class="model-name" data-value="C">C - </label>
+						<input class="device-name" type="text" placeholder="Device Name">
+					</div> -->
+					</div>
+					<button class="icon-plus btn btn-icon btn-outline-primary" id="add-more-device-btn">Add one more device</button>
+
+				</div>
+				<div class="step-field-block">
+					<label class="step-field-label">Permission</label>
+					<div class="add-editor-container">
+						<div class="project-permission-radio-group">
+							<div class="radio-group permission-radio active" id="everyone-permission">
+								<i class="fa fa-check" aria-hidden="true"></i>
+								<span class="text">Everyone can see this project</span>
+							</div>
+							<div class="radio-group permission-radio" id="onlyme-permission">
+								<i class="fa fa-check" aria-hidden="true"></i>
+								<span class="text">Only me or editor can see this project</span>
+							</div>
+						</div>
+						<div class="manager-select-group">
+							<!-- <select id="manager-select"></select> -->
+							<button id="select-all-manager-btn">Select all</button>
+							<div id="manager-select"></div>
+							<div class="note">
+								Note : Editor can view and edit your project setting.
+							</div>
+							<div class="cover"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="step-field-block">
+				<div class="step-func-container">
+					<button id="" class="icon-close btn btn-icon btn-outline-secondary cancel-step-btn">Cancel
+				</button>
+					<button id="goto-step-two-btn" class="icon-arrow-right btn btn-icon btn-outline-success next-step-btn" style="float:right;">Next Step
+						<i id="info-empty-error-label" class="fa fa-exclamation-circle" aria-hidden="true" style="display:none;"></i>
+				</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="step-container" data-step="2" style="display:none;">
+		<div class="step-content">
+			<div class="step-head">
+
+				<!-- <div class="step-icon-group">2</div>
+				<div class="step-title">Please please setup tests.</div> -->
+			</div>
+			<div class="step-body">
+				<div class="step-field-block">
+					<label class="step-field-label">Select the testing tasks and order by moving mouse and click target for this study. And the unchoosing tasks won't be show up in this study.</label>
+				</div>
+				<div class="step-field-block">
+					<!-- <div class="reset-selection-btn">
+						<i class="fa fa-times" aria-hidden="true"></i> Reset order of tests.
+					</div> -->
+					<!-- <label class="error-label" id="test-empty-error-label">
+					<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+				</label> -->
+					<div class="error-label alert alert-danger" id="test-selection-error-label" role="alert">
+						<i class="fa fa-exclamation-circle" aria-hidden="true"></i>You need to set order for all the tests in this project or delete task if won’t be covered in this study.
+					</div>
+					<div class="card-deck">
+						<div class="card test-group-container test-order-card active">
+							<button class="icon-close remove-test-btn" data-toggle="tooltip" data-placement="bottom" title="Remove this test from this project"></button>
+							<button class="icon-check check-test-btn" style="display:none;" data-placement="bottom" title="Add this test to this project"></button>
+							<div class="card-body">
+								<h5 class="card-title">Winfitts</h5>
+								<p class="card-text">During this test, the average travel time of cursor movement under assigned index of difficulty (ID) would be caculateted.</p>
+								<div class="btn-group sort-test-btn-group" role="group" aria-label="" data-test="Winfitts">
+									<button type="button" class="btn btn-outline-success" data-value="1">1st</button>
+									<button type="button" class="btn btn-outline-success" data-value="2">2nd</button>
+									<button type="button" class="btn btn-outline-success" data-value="3">3rd</button>
+								</div>
+							</div>
+							<div class="card-footer text-center bg-success text-white" data-url="./Test-Fitts-Home" data-name="Winfitts" data-value="#">
+								#
+							</div>
+						</div>
+						<div class="card test-group-container test-order-card active">
+							<button class="icon-close remove-test-btn" data-toggle="tooltip" data-placement="bottom" title="Remove this test from this project"></button>
+							<button class="icon-check check-test-btn" style="display:none;" data-placement="bottom" title="Add this test to this project"></button>
+							<div class="card-body">
+								<h5 class="card-title">Drag and Drop</h5>
+								<p class="card-text">Participants will drag and drop the file icon into target zone. The numbers of errors, such as dropping the file in the middle, opening the file, are recorded.</p>
+								<div class="btn-group sort-test-btn-group" role="group" aria-label="" data-test="Drag And Drop">
+									<button type="button" class="btn btn-outline-success" data-value="1">1st</button>
+									<button type="button" class="btn btn-outline-success" data-value="2">2nd</button>
+									<button type="button" class="btn btn-outline-success" data-value="3">3rd</button>
+								</div>
+							</div>
+							<div class="card-footer text-center bg-success text-white" data-url="./Test-DragAndDrop-Home" data-name="Drag And Drop" data-value="#">
+								#
+							</div>
+						</div>
+						<div class="card test-group-container test-order-card active">
+							<button class="icon-close remove-test-btn" data-toggle="tooltip" data-placement="bottom" title="Remove this test from this project"></button>
+							<button class="icon-check check-test-btn" style="display:none;" data-placement="bottom" title="Add this test to this project"></button>
+							<div class="card-body">
+								<h5 class="card-title">Typing Test</h5>
+								<p class="card-text">The number of cursor movement and clicks are recorded while the participant is typing.</p>
+								<div class="btn-group sort-test-btn-group" role="group" aria-label="" data-test="Typing">
+									<button type="button" class="btn btn-outline-success" data-value="1">1st</button>
+									<button type="button" class="btn btn-outline-success" data-value="2">2nd</button>
+									<button type="button" class="btn btn-outline-success" data-value="3">3rd</button>
+								</div>
+							</div>
+							<div class="card-footer text-center bg-success text-white" data-url="./Test-Typing-Home" data-name="Typing" data-value="#">
+								#
+							</div>
+						</div>
+					</div>
+					<!-- <div class="test-group-container" data-url="./Test-Fitts-Home" data-name="Fitts Law">
+						<div class="test-title">
+							Fitts Law
+							<div class="selected-number-container">
+								<div class="selected-number"></div>
+							</div>
+						</div>
+						<div class="test-description">During this test, the average travel time of cursor movement under assigned index of difficulty (ID) would be caculateted.</div>
+						<div class="test-selet-mask">
+							<div class="select-number"></div>
+						</div>
+					</div> -->
+					<!-- <div class="test-group-container" data-url="./Test-DragAndDrop-Home" data-name="Drag And Drop">
+						<div class="test-title">Drag and Drop
+							<div class="selected-number-container">
+								<div class="selected-number"></div>
+							</div>
+						</div>
+						<div class="test-description">Participants will drag and drop the file icon into target zone. The numbers of errors, such as dropping the file in the middle, opening the file, are recorded.</div>
+						<div class="test-selet-mask">
+							<div class="select-number"></div>
+						</div>
+					</div> -->
+					<!-- <div class="test-group-container" data-url="./Test-Typing-Home" data-name="Typing">
+						<div class="test-title">Typing Test
+							<div class="selected-number-container">
+								<div class="selected-number"></div>
+							</div>
+						</div>
+						<div class="test-description">The number of cursor movement and clicks are recorded while the participant is typing.</div>
+						<div class="test-selet-mask">
+							<div class="select-number"></div>
+						</div>
+					</div> -->
+				</div>
+			</div>
+			<div class="step-field-block">
+				<div class="step-func-container">
+					<button id="backto-step-one-btn" class="icon-arrow-left btn btn-icon btn-outline-secondary cancel-step-btn">Back
+				</button>
+					<button id="goto-step-three-btn" class="icon-arrow-right btn btn-icon btn-outline-success next-step-btn" style="float:right;">
+					Next Step
+					<label class="error-label" id="info-empty-error-label" style="float:right;">
+						<i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+					</label>
+				</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="step-container" data-step="3" style="display:none;">
+		<div class="step-content">
+			<div class="step-head">
+			</div>
+			<div class="step-body">
+				<div class="step-field-block">
+					<label class="step-field-label">Please check below tasks setting are all done.</label>
+					<div id="confirm-project-container">
+						<div class="form-group row">
+							<label for="confirm-project-name" class="col-sm-2 col-form-label">Project Name</label>
+							<div class="col-sm-10">
+								<input type="text" readonly class="form-control-plaintext project-name" id="confirm-project-name">
+							</div>
+						</div>
+						<div class="row project-test-order"></div>
+					</div>
+				</div>
+				<div class="step-field-block" id="fitts-setting-field-block" style="display:none;">
+					<div class="fitts-setting-container">
+						<label class="step-field-label">Winfitts Setting</label>
+						<div class="form-group row">
+							<label class="col-sm-3 col-form-label">Number of trails</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control form-control-sm setting-input new-project-input" data-field="FittsRound" value="48">
+							</div>
+							<div class="col-sm-1">
+								<button type="button" class="btn text-secondary icon-question" data-toggle="popover" data-trigger="hover" title="Number of trails" data-content="Please fill into the number of trails. Suggest the number must be in multiple of 6 because there are six direction in random for each index difficuties."></button>
+							</div>
+						</div>
+						<div class="form-group row">
+							<label class="col-sm-3 col-form-label">Practice Trails</label>
+							<div class="col-sm-2">
+								<input type="text" class="form-control form-control-sm setting-input new-project-input" data-field="FittsPracticeRound" value="0">
+							</div>
+							<div class="col-sm-1">
+								<button type="button" class="btn text-secondary icon-question" data-toggle="popover" data-trigger="hover" title="Practice Trails" data-content="Please fill into the number of trails. Suggest the number must be in multiple of 6 because there are six direction in random for each index difficuties."></button>
+							</div>
+						</div>
+						<div class="setting-group">
+							<label class="step-field-label">
+							Please assign the Width and the Distance below. Then click the “Calculate ID” button to get the Index of Difficulty. Please note that the maximum distance is 150 to avoid display
+							<button id="formula-tips" type="button" class="btn text-secondary icon-question" data-html="true" data-trigger="hover" data-toggle="popover" title="Practice Trails" data-content="<p>ID = log2 ( ( D / W ) + 1 )</p><p>ID stands for Index of Difficulty.</p><p>W stands for the width of the target circle.</p><p>D stands for the distance between the target and the start circle.</p>"></button>
+						</label>
+							<div class="form-group row id-setting-group">
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Width1">Width</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" value="3" aria-label="Width" aria-describedby="Width1">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Distance1">Distance</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" value="150" aria-label="Distance" aria-describedby="Distance1">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="ID1">ID</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" value="5.7" aria-label="ID" aria-describedby="ID1" readonly>
+								</div>
+							</div>
+							<div class="form-group row id-setting-group">
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Width2">Width</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" value="15" aria-label="Width" aria-describedby="Width2">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Distance2">Distance</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" value="150" aria-label="Distance" aria-describedby="Distance2">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="ID2">ID</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" value="3.5" aria-label="ID" aria-describedby="ID2" readonly>
+								</div>
+							</div>
+							<div class="form-group row id-setting-group">
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Width3">Width</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" value="3" aria-label="Width" aria-describedby="Width3">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Distance3">Distance</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" value="30" aria-label="Distance" aria-describedby="Distance3">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="ID3">ID</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" value="3.5" aria-label="ID" aria-describedby="ID3" readonly>
+								</div>
+							</div>
+							<div class="form-group row id-setting-group">
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Width4">Width</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-w" placeholder="Width" value="15" aria-label="Width" aria-describedby="Width4">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="Distance4">Distance</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-d" placeholder="Distance" value="30" aria-label="Distance" aria-describedby="Distance4">
+								</div>
+								<div class="col-3 input-group mb-3">
+									<div class="input-group-prepend">
+										<span class="input-group-text" id="ID4">ID</span>
+									</div>
+									<input type="text" class="form-control id-setting-input fitts-id" placeholder="ID" value="1.6" aria-label="ID" aria-describedby="ID4" readonly>
+								</div>
+							</div>
+							<button class="icon-calculator btn btn-icon btn-outline-info" id="caculate-id-btn">Calculate ID</button>
+							<span class="text-danger ml-2" style="display:none;" id="need-calculate-alert">You need to Click on Calculate ID to create this project.</span>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="step-field-block">
+				<div class="step-func-container">
+					<button id="backto-step-two-btn" class="icon-arrow-left btn btn-icon btn-outline-secondary cancel-step-btn">
+					Back
+				</button>
+					<button id="create-project-btn" class="icon-plus btn btn-icon btn-outline-success next-step-btn" style="float:right;">
+					Create Project
+				</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="create-project-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalCenterTitle">Project created!</h5>
+				<!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button> -->
+			</div>
+			<div class="modal-body">
+				Don't forget to Calibrate device screen in <strong>Project Page -> Devices Page</strong>
+			</div>
+			<div class="modal-footer">
+				<a class="icon-home btn btn-icon btn-outline-info" href="./">Back to manager home</a>
+				<a class="icon-settings btn btn-icon btn-outline-success" href="" id="project-page-link">Calibrate Devices Now</a>
+				<!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-primary">Save changes</button> -->
+			</div>
+		</div>
+	</div>
+	<!-- <div class="content">
+		<div class="status">Project creating...</div>
+		<div class="note">Note : Don't forget to Calibrate device screen in <strong>Project Page -> Devices Page</strong></div>
+		<div class="link-container">
+			<a class="border-btn" href="./">Back to manager home</a>
+			<a class="border-btn" href="" id="project-page-link">Calibrate Devices Now</a>
+		</div>
+	</div> -->
+</div>
